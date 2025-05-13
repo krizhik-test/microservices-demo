@@ -1,0 +1,100 @@
+version: "3.8"
+
+services:
+  data-ingestion-service:
+    build:
+      context: ./
+      dockerfile: ./apps/data-ingestion-service/Dockerfile
+    container_name: data-ingestion-service
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT_DATA_INGESTION=3001
+      - DATA_SERVICE_MONGODB_URI=mongodb://mongodb:27017/data_service
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./uploads:/app/uploads
+      - ./downloads:/app/downloads
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - app-network
+
+  logging-service:
+    build:
+      context: ./
+      dockerfile: ./apps/logging-service/Dockerfile
+    container_name: logging-service
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - PORT_LOGGING=3002
+      - LOGGING_SERVICE_MONGODB_URI=mongodb://mongodb:27017/logging_service
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=password
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+  redis:
+    image: redislabs/redistimeseries:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    ports:
+      - "8002:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  redis_data:
+  uploads:
+  downloads:
