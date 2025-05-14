@@ -1,84 +1,83 @@
 import { HttpStatus } from "@nestjs/common";
-import { ApiDoc } from "@app/shared/swagger";
+import { applyDecorators } from "@nestjs/common";
+import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import {
+  DataFetchResponseDto,
+  DeleteAllResponseDto,
+  DeleteResponseDto,
+  FileInfoDto,
+} from "../dto/response/data-response.dto";
 
 export function ApiFetchData() {
-  return ApiDoc("Fetch data from public API and save as JSON file", [
-    {
+  return applyDecorators(
+    ApiOperation({
+      summary: "Fetch data from public API and save as JSON file",
+    }),
+    ApiResponse({
       status: HttpStatus.CREATED,
       description: "Data fetched and saved successfully",
-      schema: {
-        type: "object",
-        properties: {
-          filename: { type: "string" },
-          size: { type: "number" },
-          path: { type: "string" },
-          timestamp: { type: "string", format: "date-time" },
-        },
-      },
-    },
-    { status: HttpStatus.BAD_REQUEST, description: "Bad request" },
-    {
+      type: DataFetchResponseDto,
+    }),
+    ApiResponse({
+      status: HttpStatus.BAD_REQUEST,
+      description: "Bad request",
+    }),
+    ApiResponse({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       description: "Internal server error",
-    },
-  ]);
+    })
+  );
 }
 
 export function ApiListFiles() {
-  return ApiDoc("List all downloaded data files", [
-    {
+  return applyDecorators(
+    ApiOperation({ summary: "List all downloaded data files" }),
+    ApiResponse({
       status: HttpStatus.OK,
       description: "List of downloaded files",
-      schema: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            filename: { type: "string" },
-            size: { type: "number" },
-            createdAt: { type: "string", format: "date-time" },
-          },
-        },
-      },
-    },
-  ]);
+      type: [FileInfoDto],
+    }),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      description: "Internal server error",
+    })
+  );
 }
 
 export function ApiDeleteDownloadedFile() {
-  return ApiDoc("Delete a specific downloaded file by filename", [
-    {
+  return applyDecorators(
+    ApiOperation({ summary: "Delete a specific downloaded file by filename" }),
+    ApiResponse({
       status: HttpStatus.OK,
       description: "File deleted successfully",
-      schema: {
-        type: "object",
-        properties: {
-          success: { type: "boolean" },
-          message: { type: "string" },
-        },
-      },
-    },
-    { status: HttpStatus.NOT_FOUND, description: "File not found" },
-    { status: HttpStatus.BAD_REQUEST, description: "Bad request" },
-  ]);
+      type: DeleteResponseDto,
+    }),
+    ApiResponse({
+      status: HttpStatus.NOT_FOUND,
+      description: "File not found",
+    }),
+    ApiResponse({
+      status: HttpStatus.BAD_REQUEST,
+      description: "Bad request",
+    }),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      description: "Internal server error",
+    })
+  );
 }
 
 export function ApiDeleteAllDownloadedFiles() {
-  return ApiDoc("Delete all downloaded files", [
-    {
+  return applyDecorators(
+    ApiOperation({ summary: "Delete all downloaded files" }),
+    ApiResponse({
       status: HttpStatus.OK,
       description: "All downloaded files deleted successfully",
-      schema: {
-        type: "object",
-        properties: {
-          success: { type: "boolean" },
-          count: { type: "number" },
-          message: { type: "string" },
-        },
-      },
-    },
-    {
+      type: DeleteAllResponseDto,
+    }),
+    ApiResponse({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       description: "Internal server error",
-    },
-  ]);
+    })
+  );
 }

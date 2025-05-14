@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Filter, InsertManyResult, Document } from "mongodb";
 import { MongoDBService } from "@app/shared";
-import { Filter, InsertManyResult } from "mongodb";
 import { DataItem } from "../interfaces/data-item.interface";
 
 @Injectable()
@@ -54,7 +54,7 @@ export class DataRepository implements OnModuleInit {
    * @param criteria Search criteria to analyze
    * @returns Query execution plan with index usage information
    */
-  async analyzeQuery(criteria: Filter<DataItem>): Promise<any> {
+  async analyzeQuery(criteria: Filter<DataItem>) {
     const collection = this.mongoDBService.getCollection<DataItem>(
       this.COLLECTION_NAME
     );
@@ -85,10 +85,7 @@ export class DataRepository implements OnModuleInit {
     };
   }
 
-  /**
-   * Helper method to extract index names from an execution plan
-   */
-  private extractIndexNames(plan: any): string[] {
+  private extractIndexNames(plan: Document): string[] {
     const indexNames: string[] = [];
 
     if (plan.queryPlanner?.winningPlan) {
@@ -98,10 +95,7 @@ export class DataRepository implements OnModuleInit {
     return indexNames;
   }
 
-  /**
-   * Helper method to recursively find indexes in an execution plan
-   */
-  private findIndexesInPlan(plan: any, indexNames: string[]): void {
+  private findIndexesInPlan(plan: Document, indexNames: string[]): void {
     if (!plan) return;
 
     if (plan.inputStage?.indexName) {
@@ -115,23 +109,15 @@ export class DataRepository implements OnModuleInit {
       this.findIndexesInPlan(plan.inputStage, indexNames);
     }
     if (plan.inputStages) {
-      plan.inputStages.forEach((stage: any) => {
+      plan.inputStages.forEach((stage: Document) => {
         this.findIndexesInPlan(stage, indexNames);
       });
     }
   }
 
-  /**
-   * Helper method to determine if a query is using an index
-   */
-  private isIndexUsed(plan: any): boolean {
+  private isIndexUsed(plan: Document): boolean {
     const indexNames = this.extractIndexNames(plan);
-    if (indexNames.length > 0) return true;
 
-    if (plan.queryPlanner?.winningPlan?.stage === "COLLSCAN") {
-      return false;
-    }
-
-    return false;
+    return indexNames.length > 0;
   }
 }

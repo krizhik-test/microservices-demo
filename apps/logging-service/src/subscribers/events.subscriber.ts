@@ -16,7 +16,6 @@ export class EventsSubscriber implements OnModuleInit {
 
   async onModuleInit() {
     await this.subscribeToEvents();
-    console.log(`Subscribed to ${this.EVENT_CHANNEL} channel`);
   }
 
   private async subscribeToEvents() {
@@ -26,23 +25,16 @@ export class EventsSubscriber implements OnModuleInit {
         const startTime = Date.now();
 
         try {
-          // Parse the event message
           const event = JSON.parse(message);
 
-          // Store the event in MongoDB
           await this.eventsRepository.insert(event);
 
-          // Log event consumption
           const executionTime = Date.now() - startTime;
           await this.redisTimeSeriesService.logEventTrace(
             this.SERVICE_NAME,
             "consume",
             channel,
             executionTime
-          );
-
-          console.log(
-            `Event processed: ${event.type} - ${event.payload.operation}`
           );
         } catch (error) {
           console.error("Error processing event:", error);

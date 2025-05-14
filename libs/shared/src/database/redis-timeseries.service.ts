@@ -16,9 +16,7 @@ import { TIME_PERIODS } from "../constants";
 export class RedisTimeSeriesService implements OnModuleInit {
   private client: any;
 
-  constructor(
-    private readonly redisService: RedisService,
-  ) {}
+  constructor(private readonly redisService: RedisService) {}
 
   async onModuleInit() {
     this.client = this.redisService.getClient();
@@ -225,7 +223,7 @@ export class RedisTimeSeriesService implements OnModuleInit {
             results.push({
               key,
               labels,
-              samples: range.map((point) => ({
+              data: range.map((point) => ({
                 timestamp: Number(point.timestamp),
                 value: Number(point.value),
               })),

@@ -21,8 +21,6 @@ export class EventsRepository implements OnModuleInit {
       { type: 1, "payload.operation": 1, "payload.status": 1 },
       { name: "type_operation_status_index" }
     );
-
-    console.log(`Created indexes for ${this.COLLECTION_NAME} collection`);
   }
 
   async find(

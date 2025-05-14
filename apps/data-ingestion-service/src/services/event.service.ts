@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
-import { ServiceName } from "@app/shared/constants";
+import { EventChannel, ServiceName } from "@app/shared/constants";
 import {
   RedisService,
   RedisTimeSeriesService,
@@ -12,7 +12,7 @@ import {
 @Injectable()
 export class EventService {
   private readonly SERVICE_NAME = ServiceName.DATA_INGESTION;
-  private readonly EVENT_CHANNEL = "events";
+  private readonly EVENT_CHANNEL = EventChannel.EVENTS;
 
   constructor(
     private readonly redisService: RedisService,

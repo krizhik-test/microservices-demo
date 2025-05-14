@@ -1,13 +1,13 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
-  UseInterceptors,
-  Get,
   Param,
-  Res,
-  UploadedFile,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  Res,
   HttpCode,
   HttpStatus,
 } from "@nestjs/common";
@@ -15,8 +15,8 @@ import { ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { FileService } from "../services/file.service";
-import { FileUploadDto } from "../dto/file-upload.dto";
-import { ApiLogInterceptor } from "../decorators/api-log.interceptor";
+import { FileUploadDto } from "../dto/request/file-upload.dto";
+
 import {
   ApiListUploadedFiles,
   ApiUploadFile,
@@ -25,29 +25,41 @@ import {
   ApiDeleteFile,
   ApiDeleteAllFiles,
 } from "../swagger/file.swagger";
+import {
+  DeleteAllResponseDto,
+  DeleteResponseDto,
+  FileInfoDto,
+} from "../dto/response/data-response.dto";
+import {
+  FileProcessResponseDto,
+  FileUploadResponseDto,
+} from "../dto/response/file-response.dto";
 
 @ApiTags("files")
 @Controller("files")
-@UseInterceptors(ApiLogInterceptor)
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
   @Get()
   @ApiListUploadedFiles()
-  async listFiles() {
+  async listFiles(): Promise<FileInfoDto[]> {
     return this.fileService.listUploadedFiles();
   }
 
   @Post("upload")
   @UseInterceptors(FileInterceptor("file"))
   @ApiUploadFile()
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File
+  ): Promise<FileUploadResponseDto> {
     return this.fileService.processUploadedFile(file);
   }
 
   @Post("process")
   @ApiProcessFile()
-  async processFile(@Body() fileUploadDto: FileUploadDto) {
+  async processFile(
+    @Body() fileUploadDto: FileUploadDto
+  ): Promise<FileProcessResponseDto> {
     return this.fileService.processExistingFile(fileUploadDto.filename);
   }
 
@@ -56,20 +68,22 @@ export class FileController {
   async downloadFile(
     @Param("filename") filename: string,
     @Res() res: Response
-  ) {
+  ): Promise<void> {
     return this.fileService.streamFileToResponse(filename, res);
   }
 
   @Delete(":filename")
   @ApiDeleteFile()
-  async deleteFile(@Param("filename") filename: string) {
+  async deleteFile(
+    @Param("filename") filename: string
+  ): Promise<DeleteResponseDto> {
     return this.fileService.deleteFile(filename);
   }
 
   @Delete()
   @HttpCode(HttpStatus.OK)
   @ApiDeleteAllFiles()
-  async deleteAllFiles() {
+  async deleteAllFiles(): Promise<DeleteAllResponseDto> {
     return this.fileService.deleteAllFiles();
   }
 }

@@ -1,20 +1,11 @@
 import { applyDecorators } from "@nestjs/common";
 import { ApiBody } from "@nestjs/swagger";
+import { FileUploadRequestDto } from "../dto/request/file-upload-request.dto";
 
 export function ApiFile() {
   return applyDecorators(
     ApiBody({
-      schema: {
-        type: "object",
-        properties: {
-          file: {
-            type: "string",
-            format: "binary",
-            description: "JSON file to upload",
-          },
-        },
-        required: ["file"],
-      },
+      type: FileUploadRequestDto,
     })
   );
 }

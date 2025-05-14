@@ -1,19 +1,15 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Filter } from "mongodb";
-import { EventsQueryDto } from "../dto/events-query.dto";
+import { EventsQueryDto } from "../dto/request/events-query.dto";
 import { EventsRepository } from "../repositories/events.repository";
 import { EventDocument } from "../interfaces/event-document.interface";
+import { EventDto, EventsListDto } from "../dto/response/events-response.dto";
 
 @Injectable()
 export class EventsService {
   constructor(private readonly eventsRepository: EventsRepository) {}
 
-  async findAll(
-    query: EventsQueryDto
-  ): Promise<{
-    data: EventDocument[];
-    pagination: { total: number; page: number; limit: number; pages: number };
-  }> {
+  async findAll(query: EventsQueryDto): Promise<EventsListDto> {
     const {
       type,
       startDate,
@@ -57,8 +53,21 @@ export class EventsService {
       this.eventsRepository.count(criteria),
     ]);
 
+    const events = data.map((event) => {
+      return {
+        id: event._id.toString(),
+        type: event.type,
+        timestamp: event.payload.timestamp,
+        service: event.payload.service,
+        operation: event.payload.operation,
+        status: event.payload.status,
+        data: event.payload.data,
+        metadata: event.payload.metadata,
+      };
+    });
+
     return {
-      data,
+      data: events,
       pagination: {
         total,
         page,
@@ -68,13 +77,22 @@ export class EventsService {
     };
   }
 
-  async findOne(id: string): Promise<EventDocument> {
+  async findOne(id: string): Promise<EventDto> {
     const event = await this.eventsRepository.findById(id);
 
     if (!event) {
       throw new NotFoundException(`Event with ID ${id} not found`);
     }
 
-    return event;
+    return {
+      id: event._id.toString(),
+      type: event.type,
+      timestamp: event.payload.timestamp,
+      service: event.payload.service,
+      operation: event.payload.operation,
+      status: event.payload.status,
+      data: event.payload.data,
+      metadata: event.payload.metadata,
+    };
   }
 }

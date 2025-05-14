@@ -54,5 +54,5 @@ export interface TimeSeriesSample {
 export interface TimeSeriesResult {
   key: string;
   labels: Record<string, string>;
-  samples: TimeSeriesSample[];
+  data: TimeSeriesSample[];
 }

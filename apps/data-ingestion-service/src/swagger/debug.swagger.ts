@@ -1,17 +1,17 @@
 import { HttpStatus } from "@nestjs/common";
 import { applyDecorators } from "@nestjs/common";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { TimeSeriesDto } from "../dto/response/timeseries-response.dto";
+import { QueryAnalysisResponseDto } from "../dto/response/query-analysis.dto";
 
-export function ApiQueryTimeSeries() {
+export function ApiAnalyzeQuery() {
   return applyDecorators(
     ApiOperation({
-      summary: "Query time series data with filtering and aggregation",
+      summary: "Analyze a search query and return MongoDB query details",
     }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: "Time series data",
-      type: [TimeSeriesDto],
+      description: "Query analysis results",
+      type: QueryAnalysisResponseDto,
     }),
     ApiResponse({
       status: HttpStatus.BAD_REQUEST,

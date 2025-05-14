@@ -19,7 +19,7 @@ export class MongoDBService implements OnModuleInit, OnModuleDestroy {
     // Determine which service is running based on multiple possible indicators
     let isLoggingService = false;
     let isDataService = false;
-    
+
     // 1. First priority: Check npm command arguments (for local development)
     if (process.env.npm_config_argv) {
       const npmArgs = JSON.parse(process.env.npm_config_argv);
@@ -27,32 +27,45 @@ export class MongoDBService implements OnModuleInit, OnModuleDestroy {
       isLoggingService = appName.includes("logging");
       isDataService = appName.includes("data") || appName.includes("ingestion");
       console.log(`Detected service from npm command: ${appName}`);
-    } 
+    }
     // 2. Second priority: Check process arguments
     else if (process.argv.length > 0) {
-      const args = process.argv.join(' ');
+      const args = process.argv.join(" ");
       isLoggingService = args.includes("logging");
       isDataService = args.includes("data") || args.includes("ingestion");
-      console.log(`Detected service from process arguments: ${isLoggingService ? 'logging' : isDataService ? 'data-ingestion' : 'unknown'}`);
+      console.log(
+        `Detected service from process arguments: ${
+          isLoggingService
+            ? "logging"
+            : isDataService
+            ? "data-ingestion"
+            : "unknown"
+        }`
+      );
     }
     // 3. Third priority: Check Docker-specific environment variables
     else if (this.configService.get<string>("PORT_LOGGING")) {
       isLoggingService = true;
-      console.log("Detected logging service from PORT_LOGGING environment variable");
-    }
-    else if (this.configService.get<string>("PORT_DATA_INGESTION")) {
+      console.log(
+        "Detected logging service from PORT_LOGGING environment variable"
+      );
+    } else if (this.configService.get<string>("PORT_DATA_INGESTION")) {
       isDataService = true;
-      console.log("Detected data-ingestion service from PORT_DATA_INGESTION environment variable");
+      console.log(
+        "Detected data-ingestion service from PORT_DATA_INGESTION environment variable"
+      );
     }
     // 4. Last resort: Use a default if we can't determine
     else {
-      console.log("Could not determine service type, defaulting to data-ingestion-service");
+      console.log(
+        "Could not determine service type, defaulting to data-ingestion-service"
+      );
       isDataService = true;
     }
 
     // Select the appropriate MongoDB URI based on the service determination
     let variableName: string;
-    
+
     if (isLoggingService) {
       variableName = "LOGGING_SERVICE_MONGODB_URI";
       console.log("Using Logging Service MongoDB URI");
@@ -60,7 +73,7 @@ export class MongoDBService implements OnModuleInit, OnModuleDestroy {
       variableName = "DATA_SERVICE_MONGODB_URI";
       console.log("Using Data Ingestion Service MongoDB URI");
     }
-    
+
     const uri = this.configService.get<string>(variableName);
 
     if (!uri) {

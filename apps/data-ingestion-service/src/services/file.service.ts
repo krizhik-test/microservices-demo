@@ -10,7 +10,7 @@ import { streamArray } from "stream-json/streamers/StreamArray";
 import { pick } from "stream-json/filters/Pick";
 import { chain } from "stream-chain";
 import { EventType } from "@app/shared";
-import { OperationType } from "@app/shared/interfaces";
+import { EventStatus, OperationType } from "@app/shared/interfaces";
 import { EventService } from "./event.service";
 import { DataRepository } from "../repositories/data.repository";
 import { parser } from "stream-json/Parser";
@@ -46,7 +46,7 @@ export class FileService {
 
       await this.eventService.publishEvent(EventType.DATA_DELETE, {
         operation: OperationType.DELETE_FILE,
-        status: "success",
+        status: EventStatus.SUCCESS,
         data: {
           filename,
         },
@@ -62,7 +62,7 @@ export class FileService {
     } catch (error) {
       await this.eventService.publishEvent(EventType.DATA_DELETE, {
         operation: OperationType.DELETE_FILE,
-        status: "error",
+        status: EventStatus.ERROR,
         data: {
           filename,
           error: error.message,
@@ -104,7 +104,7 @@ export class FileService {
 
       await this.eventService.publishEvent(EventType.DATA_DELETE, {
         operation: OperationType.DELETE_ALL_FILES,
-        status: "success",
+        status: EventStatus.SUCCESS,
         data: {
           count: jsonFiles.length,
         },
@@ -121,7 +121,7 @@ export class FileService {
     } catch (error) {
       await this.eventService.publishEvent(EventType.DATA_DELETE, {
         operation: OperationType.DELETE_ALL_FILES,
-        status: "error",
+        status: EventStatus.ERROR,
         data: {
           error: error.message,
         },
@@ -146,7 +146,7 @@ export class FileService {
           return {
             filename: file,
             size: stats.size,
-            createdAt: stats.birthtime,
+            createdAt: stats.birthtime.toISOString(),
           };
         })
     );
@@ -202,7 +202,7 @@ export class FileService {
     } catch (error) {
       await this.eventService.publishEvent(EventType.DATA_UPLOAD, {
         operation: OperationType.UPLOAD_FILE,
-        status: "error",
+        status: EventStatus.ERROR,
         data: {
           error: error.message,
         },
@@ -233,7 +233,7 @@ export class FileService {
 
       await this.eventService.publishEvent(EventType.DATA_UPLOAD, {
         operation: OperationType.PROCESS_FILE,
-        status: "success",
+        status: EventStatus.SUCCESS,
         data: {
           filename,
           recordsProcessed: result.recordsProcessed,
@@ -247,7 +247,7 @@ export class FileService {
     } catch (error) {
       await this.eventService.publishEvent(EventType.DATA_UPLOAD, {
         operation: OperationType.PROCESS_FILE,
-        status: "error",
+        status: EventStatus.ERROR,
         data: {
           filename,
           error: error.message,

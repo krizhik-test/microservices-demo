@@ -1,7 +1,9 @@
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { ConfigService } from "@nestjs/config";
 import { AppModule } from "./app.module";
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -29,9 +31,12 @@ async function bootstrap() {
 
   SwaggerModule.setup("api", app, document);
 
-  const port = process.env.PORT_LOGGING || 3002;
-  await app.listen(port);
-  console.log(`Logging Service is running on: http://localhost:${port}`);
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>("app.port");
+
+  await app.listen(port, () => {
+    console.log(`Logging Service is running on: http://localhost:${port}`);
+  });
 }
 
 bootstrap();

@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsEnum, IsDateString, IsOptional } from "class-validator";
 import {
   TimeSeriesType,
@@ -32,50 +32,45 @@ export class TimeSeriesQueryDto {
   @IsDateString()
   endDate: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Aggregation type for time series data",
     enum: AggregationType,
-    required: false,
   })
   @IsOptional()
   @IsEnum(AggregationType)
   aggregation?: AggregationType;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Service name filter",
     example: ServiceName.DATA_INGESTION,
-    required: false,
     enum: ServiceName,
   })
   @IsOptional()
   @IsEnum(ServiceName)
   service?: ServiceName;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Filter by API endpoint (for api_request type)",
     enum: ApiEndpoint,
     example: ApiEndpoint.DATA_FETCH,
-    required: false,
   })
   @IsOptional()
   @IsEnum(ApiEndpoint)
   endpoint?: ApiEndpoint;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Filter by HTTP method (for api_request type)",
     enum: HttpMethod,
     example: HttpMethod.POST,
-    required: false,
   })
   @IsOptional()
   @IsEnum(HttpMethod)
   method?: HttpMethod;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description:
       "Filter by event type - publish or consume (for event_trace type)",
     enum: TimeSeriesEventType,
-    required: false,
   })
   @IsOptional()
   @IsEnum(TimeSeriesEventType)

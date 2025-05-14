@@ -3,14 +3,19 @@ import {
   NotFoundException,
   BadRequestException,
 } from "@nestjs/common";
-import { DataFetchDto } from "../dto/data-fetch.dto";
+import { DataFetchDto } from "../dto/request/data-fetch.dto";
 import * as fs from "fs";
 import * as path from "path";
 import * as util from "util";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { EventService } from "./event.service";
-import { EventType, OperationType } from "@app/shared/interfaces";
+import { EventStatus, EventType, OperationType } from "@app/shared/interfaces";
+import {
+  MAX_LIMIT,
+  MAX_RESULTS_PER_REQUEST,
+  WIKI_API_URL,
+} from "../constants/wiki.constants";
 
 @Injectable()
 export class DataService {
@@ -24,10 +29,8 @@ export class DataService {
 
     try {
       // Calculate how many API calls we need to make
-      // Wikipedia API has a limit of 500 results per request
-      const maxResultsPerRequest = 500;
-      const requestsNeeded = Math.ceil(limit / maxResultsPerRequest);
-      const actualLimit = Math.min(limit, 10000); // Cap at 10,000 to avoid excessive API calls
+      const requestsNeeded = Math.ceil(limit / MAX_RESULTS_PER_REQUEST);
+      const actualLimit = Math.min(limit, MAX_LIMIT); // Cap at 10,000 to avoid excessive API calls
 
       const outputFilename = `${
         filename || query.replace(/\s+/g, "-")
@@ -56,13 +59,13 @@ export class DataService {
       let isFirstBatch = true;
 
       for (let i = 0; i < requestsNeeded && resultCount < actualLimit; i++) {
-        const offset = i * maxResultsPerRequest;
+        const offset = i * MAX_RESULTS_PER_REQUEST;
         const currentLimit = Math.min(
-          maxResultsPerRequest,
+          MAX_RESULTS_PER_REQUEST,
           actualLimit - resultCount
         );
 
-        const response = await axios.get("https://en.wikipedia.org/w/api.php", {
+        const response = await axios.get(WIKI_API_URL, {
           params: {
             action: "query",
             list: "search",
@@ -131,7 +134,7 @@ export class DataService {
 
       await this.eventService.publishEvent(EventType.DATA_FETCH, {
         operation: OperationType.FETCH_DATA,
-        status: "success",
+        status: EventStatus.SUCCESS,
         data: {
           query,
           limit,
@@ -147,7 +150,7 @@ export class DataService {
     } catch (error) {
       await this.eventService.publishEvent(EventType.DATA_FETCH, {
         operation: OperationType.FETCH_DATA,
-        status: "error",
+        status: EventStatus.ERROR,
         data: {
           query,
           limit,
@@ -177,7 +180,7 @@ export class DataService {
           return {
             filename: file,
             size: stats.size,
-            createdAt: stats.birthtime,
+            createdAt: stats.birthtime.toISOString(),
           };
         })
     );
@@ -204,7 +207,7 @@ export class DataService {
 
       await this.eventService.publishEvent(EventType.DATA_DELETE, {
         operation: OperationType.DELETE_DOWNLOADED_FILE,
-        status: "success",
+        status: EventStatus.SUCCESS,
         data: {
           filename,
         },
@@ -220,7 +223,7 @@ export class DataService {
     } catch (error) {
       await this.eventService.publishEvent(EventType.DATA_DELETE, {
         operation: OperationType.DELETE_DOWNLOADED_FILE,
-        status: "error",
+        status: EventStatus.ERROR,
         data: {
           filename,
           error: error.message,
@@ -262,7 +265,7 @@ export class DataService {
 
       await this.eventService.publishEvent(EventType.DATA_DELETE, {
         operation: OperationType.DELETE_ALL_DOWNLOADED_FILES,
-        status: "success",
+        status: EventStatus.SUCCESS,
         data: {
           count: jsonFiles.length,
         },
@@ -279,7 +282,7 @@ export class DataService {
     } catch (error) {
       await this.eventService.publishEvent(EventType.DATA_DELETE, {
         operation: OperationType.DELETE_ALL_DOWNLOADED_FILES,
-        status: "error",
+        status: EventStatus.ERROR,
         data: {
           error: error.message,
         },

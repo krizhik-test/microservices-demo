@@ -1,8 +1,5 @@
-import { EventType, OperationType } from "@app/shared/interfaces";
+import { EventStatus, EventType, OperationType } from "@app/shared/interfaces";
 
-/**
- * Interface representing an event document stored in MongoDB
- */
 export interface EventDocument {
   /** MongoDB document ID */
   _id?: string;
@@ -19,7 +16,7 @@ export interface EventDocument {
     /** Operation type */
     operation: OperationType;
     /** Status of the operation (success or error) */
-    status: "success" | "error";
+    status: EventStatus;
     /** Event-specific data */
     data: Record<string, any>;
     /** Additional metadata */

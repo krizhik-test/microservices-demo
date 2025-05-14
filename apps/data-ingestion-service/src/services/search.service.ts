@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Filter } from "mongodb";
-import { EventType, OperationType } from "@app/shared/interfaces";
-import { SearchDto } from "../dto/search.dto";
+import { EventStatus, EventType, OperationType } from "@app/shared/interfaces";
+import { SearchDto } from "../dto/request/search.dto";
 import { DataRepository } from "../repositories/data.repository";
 import { EventService } from "./event.service";
 import { DataItem } from "../interfaces/data-item.interface";
@@ -76,7 +76,7 @@ export class SearchService {
     } catch (error) {
       await this.eventService.publishEvent(EventType.DATA_SEARCH, {
         operation: OperationType.SEARCH,
-        status: "error",
+        status: EventStatus.ERROR,
         data: {
           query,
           title,

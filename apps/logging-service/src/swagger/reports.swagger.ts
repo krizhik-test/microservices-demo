@@ -1,10 +1,5 @@
 import { applyDecorators, HttpStatus } from "@nestjs/common";
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiConsumes,
-  ApiProduces,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiProduces } from "@nestjs/swagger";
 
 export function ApiGenerateReport() {
   return applyDecorators(

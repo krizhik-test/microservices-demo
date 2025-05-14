@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsString, IsOptional, IsInt, Min } from "class-validator";
 
 export class DataFetchDto {
@@ -9,20 +9,18 @@ export class DataFetchDto {
   @IsString()
   query: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Number of results to fetch",
     example: 100,
-    required: false,
   })
   @IsOptional()
   @IsInt()
   @Min(1)
   limit?: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Filename to save the data (without extension)",
     example: "wiki-data",
-    required: false,
   })
   @IsOptional()
   @IsString()

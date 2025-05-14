@@ -1,44 +1,22 @@
-import { Controller, Post, Body, UseInterceptors } from "@nestjs/common";
+import { Controller, Post, Body } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { DebugSearchDto } from "../dto/debug-search.dto";
-import { DataRepository } from "../repositories/data.repository";
-import { ApiLogInterceptor } from "../decorators/api-log.interceptor";
+import { Filter } from "mongodb";
+import { DebugSearchDto } from "../dto/request/debug-search.dto";
+import { ApiAnalyzeQuery } from "../swagger/debug.swagger";
+import { DebugService } from "../services/debug.service";
+import { DataItem } from "../interfaces/data-item.interface";
+import { QueryAnalysisResponseDto } from "../dto/response/query-analysis.dto";
 
 @ApiTags("debug")
 @Controller("debug")
-@UseInterceptors(ApiLogInterceptor)
 export class DebugController {
-  constructor(private readonly dataRepository: DataRepository) {}
+  constructor(private readonly debugService: DebugService) {}
 
   @Post("analyze-query")
-  async analyzeQuery(@Body() searchDto: DebugSearchDto) {
-    const { query, title, snippet } = searchDto;
-
-    const searchCriteria: any = {};
-
-    if (query) {
-      searchCriteria.$or = [
-        { title: { $regex: query, $options: "i" } },
-        { snippet: { $regex: query, $options: "i" } },
-      ];
-    } else {
-      if (title && snippet) {
-        searchCriteria.$and = [
-          { title: { $regex: title, $options: "i" } },
-          { snippet: { $regex: snippet, $options: "i" } },
-        ];
-      } else if (title) {
-        searchCriteria.$text = { $search: title };
-      } else if (snippet) {
-        searchCriteria.snippet = { $regex: snippet, $options: "i" };
-      }
-    }
-
-    const analysis = await this.dataRepository.analyzeQuery(searchCriteria);
-
-    return {
-      query: searchCriteria,
-      analysis,
-    };
+  @ApiAnalyzeQuery()
+  async analyzeQuery(
+    @Body() searchDto: DebugSearchDto
+  ): Promise<QueryAnalysisResponseDto> {
+    return this.debugService.analyzeQuery(searchDto);
   }
 }

@@ -2,7 +2,7 @@ export const CHART_CANVAS_CONFIG = {
   width: 800,
   height: 400,
   backgroundColour: "white",
-};
+} as const;
 
 export interface ChartDatasetConfig {
   label: string;
@@ -30,7 +30,7 @@ export const createChartConfig = (
   queryParams: ChartQueryParams
 ) => {
   return {
-    type: "line" as const,
+    type: "line",
     data: {
       labels,
       datasets,
@@ -77,11 +77,11 @@ export const createChartConfig = (
           },
         },
         legend: {
-          position: "bottom" as const,
+          position: "bottom",
         },
       },
     },
-  };
+  } as const;
 };
 
 export const getRandomColor = (alpha = 1): string => {

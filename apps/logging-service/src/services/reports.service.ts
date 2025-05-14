@@ -2,8 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 import * as PDFDocument from "pdfkit";
 import { TimeSeriesService } from "./timeseries.service";
-import { TimeSeriesQueryDto } from "../dto/timeseries-query.dto";
-import { ReportGenerationQueryDto } from "../dto/report-generation-query.dto";
+import { TimeSeriesQueryDto } from "../dto/request/timeseries-query.dto";
+import { ReportGenerationQueryDto } from "../dto/request/report-generation-query.dto";
 import {
   CHART_CANVAS_CONFIG,
   ChartQueryParams,

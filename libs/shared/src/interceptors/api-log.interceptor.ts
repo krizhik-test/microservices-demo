@@ -17,7 +17,7 @@ import { RedisTimeSeriesService } from "../database/redis-timeseries.service";
 export function ApiLogInterceptorFactory(serviceName: string) {
   @Injectable()
   class ApiLogInterceptor implements NestInterceptor {
-    constructor(public readonly redisTimeSeriesService: RedisTimeSeriesService) {}
+    constructor(readonly redisTimeSeriesService: RedisTimeSeriesService) {}
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
       const request = context.switchToHttp().getRequest();
@@ -32,7 +32,7 @@ export function ApiLogInterceptorFactory(serviceName: string) {
       );
     }
 
-    public logSuccess(
+    logSuccess(
       method: string,
       url: string,
       startTime: number,
@@ -48,12 +48,7 @@ export function ApiLogInterceptorFactory(serviceName: string) {
       );
     }
 
-    public logError(
-      method: string,
-      url: string,
-      startTime: number,
-      error: any
-    ): void {
+    logError(method: string, url: string, startTime: number, error: any): void {
       const executionTime = Date.now() - startTime;
       this.redisTimeSeriesService.logApiRequest(
         serviceName,

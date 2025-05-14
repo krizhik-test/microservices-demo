@@ -1,14 +1,12 @@
-import { Controller, Get, Query, Res, UseInterceptors } from "@nestjs/common";
+import { Controller, Get, Query, Res } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
 import { ReportsService } from "../services/reports.service";
-import { ReportGenerationQueryDto } from "../dto/report-generation-query.dto";
-import { ApiLogInterceptor } from "../decorators/api-log.interceptor";
+import { ReportGenerationQueryDto } from "../dto/request/report-generation-query.dto";
 import { ApiGenerateReport } from "../swagger/reports.swagger";
 
 @Controller("reports")
 @ApiTags("reports")
-@UseInterceptors(ApiLogInterceptor)
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
@@ -17,7 +15,7 @@ export class ReportsController {
   async generateReport(
     @Query() queryDto: ReportGenerationQueryDto,
     @Res() res: Response
-  ) {
+  ): Promise<void> {
     const { buffer, filename } = await this.reportsService.generateReport(
       queryDto
     );

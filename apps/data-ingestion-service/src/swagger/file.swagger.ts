@@ -1,124 +1,127 @@
 import { applyDecorators, HttpStatus } from "@nestjs/common";
-import { ApiConsumes } from "@nestjs/swagger";
-import { ApiDoc } from "@app/shared/swagger";
+import { ApiConsumes, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import {
+  FileInfoDto,
+  DeleteResponseDto,
+  DeleteAllResponseDto,
+} from "../dto/response/data-response.dto";
+import {
+  FileUploadResponseDto,
+  FileProcessResponseDto,
+} from "../dto/response/file-response.dto";
 import { ApiFile } from "./api-file.decorator";
 
 export function ApiListUploadedFiles() {
-  return ApiDoc("List all uploaded JSON files", [
-    {
+  return applyDecorators(
+    ApiOperation({ summary: "List all uploaded JSON files" }),
+    ApiResponse({
       status: HttpStatus.OK,
       description: "List of uploaded files",
-      schema: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            filename: { type: "string" },
-            size: { type: "number" },
-            createdAt: { type: "string", format: "date-time" },
-          },
-        },
-      },
-    },
-  ]);
+      type: [FileInfoDto],
+    }),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      description: "Internal server error",
+    })
+  );
 }
 
 export function ApiUploadFile() {
   return applyDecorators(
-    ApiDoc("Upload a JSON file and store its data in MongoDB", [
-      {
-        status: HttpStatus.CREATED,
-        description: "File uploaded and data stored successfully",
-        schema: {
-          type: "object",
-          properties: {
-            filename: { type: "string" },
-            recordsProcessed: { type: "number" },
-            timestamp: { type: "string", format: "date-time" },
-          },
-        },
-      },
-      {
-        status: HttpStatus.BAD_REQUEST,
-        description: "Bad request or invalid file",
-      },
-      {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        description: "Internal server error",
-      },
-    ]),
+    ApiOperation({
+      summary: "Upload a JSON file and store its data in MongoDB",
+    }),
+    ApiResponse({
+      status: HttpStatus.CREATED,
+      description: "File uploaded and data stored successfully",
+      type: FileUploadResponseDto,
+    }),
+    ApiResponse({
+      status: HttpStatus.BAD_REQUEST,
+      description: "Bad request or invalid file",
+    }),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      description: "Internal server error",
+    }),
     ApiConsumes("multipart/form-data"),
     ApiFile()
   );
 }
 
 export function ApiProcessFile() {
-  return ApiDoc("Process an existing JSON file and store its data in MongoDB", [
-    {
+  return applyDecorators(
+    ApiOperation({
+      summary: "Process an existing JSON file and store its data in MongoDB",
+    }),
+    ApiResponse({
       status: HttpStatus.CREATED,
       description: "File processed and data stored successfully",
-      schema: {
-        type: "object",
-        properties: {
-          filename: { type: "string" },
-          recordsProcessed: { type: "number" },
-          timestamp: { type: "string", format: "date-time" },
-        },
-      },
-    },
-    {
+      type: FileProcessResponseDto,
+    }),
+    ApiResponse({
       status: HttpStatus.BAD_REQUEST,
       description: "Bad request or file not found",
-    },
-    {
+    }),
+    ApiResponse({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       description: "Internal server error",
-    },
-  ]);
+    })
+  );
 }
 
 export function ApiDownloadFile() {
-  return ApiDoc("Download a previously generated JSON file", [
-    { status: HttpStatus.OK, description: "File stream" },
-    { status: HttpStatus.NOT_FOUND, description: "File not found" },
-  ]);
+  return applyDecorators(
+    ApiOperation({ summary: "Download a previously generated JSON file" }),
+    ApiResponse({
+      status: HttpStatus.OK,
+      description: "File stream",
+    }),
+    ApiResponse({
+      status: HttpStatus.NOT_FOUND,
+      description: "File not found",
+    }),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      description: "Internal server error",
+    })
+  );
 }
 
 export function ApiDeleteFile() {
-  return ApiDoc("Delete a specific JSON file by filename", [
-    {
+  return applyDecorators(
+    ApiOperation({ summary: "Delete a specific JSON file by filename" }),
+    ApiResponse({
       status: HttpStatus.OK,
       description: "File deleted successfully",
-      schema: {
-        type: "object",
-        properties: {
-          success: { type: "boolean" },
-          message: { type: "string" },
-        },
-      },
-    },
-    { status: HttpStatus.NOT_FOUND, description: "File not found" },
-    { status: HttpStatus.BAD_REQUEST, description: "Bad request" },
-  ]);
+      type: DeleteResponseDto,
+    }),
+    ApiResponse({
+      status: HttpStatus.NOT_FOUND,
+      description: "File not found",
+    }),
+    ApiResponse({
+      status: HttpStatus.BAD_REQUEST,
+      description: "Bad request",
+    }),
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      description: "Internal server error",
+    })
+  );
 }
 
 export function ApiDeleteAllFiles() {
-  return ApiDoc("Delete all JSON files", [
-    {
+  return applyDecorators(
+    ApiOperation({ summary: "Delete all JSON files" }),
+    ApiResponse({
       status: HttpStatus.OK,
       description: "All files deleted successfully",
-      schema: {
-        type: "object",
-        properties: {
-          success: { type: "boolean" },
-          count: { type: "number" },
-          message: { type: "string" },
-        },
-      },
-    },
-    {
+      type: DeleteAllResponseDto,
+    }),
+    ApiResponse({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       description: "Internal server error",
-    },
-  ]);
+    })
+  );
 }

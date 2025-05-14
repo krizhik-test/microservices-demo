@@ -3,9 +3,12 @@ import {
   EventChannel,
   RedisTimeSeriesService,
   ServiceName,
+  TIME_PERIODS,
+  TimeSeriesResult,
   TimeSeriesType,
 } from "@app/shared";
-import { TimeSeriesQueryDto } from "../dto/timeseries-query.dto";
+import { TimeSeriesQueryDto } from "../dto/request/timeseries-query.dto";
+import { TimeSeriesDto } from "../dto/response/timeseries-response.dto";
 
 @Injectable()
 export class TimeSeriesService {
@@ -46,23 +49,19 @@ export class TimeSeriesService {
       filterCriteria["channel"] = String(EventChannel.EVENTS);
     }
 
-    let aggregationConfig = undefined;
+    let aggregationConfig;
     if (aggregation) {
       const timeRangeMs = toTimestamp - fromTimestamp;
-      let bucketSizeMs = 60000; // Default: 1 minute
+      let bucketSizeMs = TIME_PERIODS.ONE_MINUTE;
 
-      if (timeRangeMs > 86400000 * 30) {
-        // > 30 days
-        bucketSizeMs = 86400000; // 1 day
-      } else if (timeRangeMs > 86400000 * 7) {
-        // > 7 days
-        bucketSizeMs = 3600000 * 6; // 6 hours
-      } else if (timeRangeMs > 86400000) {
-        // > 1 day
-        bucketSizeMs = 3600000; // 1 hour
-      } else if (timeRangeMs > 3600000 * 6) {
-        // > 6 hours
-        bucketSizeMs = 300000; // 5 minutes
+      if (timeRangeMs > TIME_PERIODS.ONE_MONTH) {
+        bucketSizeMs = TIME_PERIODS.ONE_DAY;
+      } else if (timeRangeMs > TIME_PERIODS.ONE_WEEK) {
+        bucketSizeMs = TIME_PERIODS.SIX_HOURS;
+      } else if (timeRangeMs > TIME_PERIODS.ONE_DAY) {
+        bucketSizeMs = TIME_PERIODS.ONE_HOUR;
+      } else if (timeRangeMs > TIME_PERIODS.SIX_HOURS) {
+        bucketSizeMs = TIME_PERIODS.FIVE_MINUTES;
       }
 
       aggregationConfig = {
@@ -82,15 +81,17 @@ export class TimeSeriesService {
     return this.transformTimeSeriesResult(result);
   }
 
-  private transformTimeSeriesResult(result: any[]): any[] {
+  private transformTimeSeriesResult(
+    result: TimeSeriesResult[]
+  ): TimeSeriesDto[] {
     if (!result || !Array.isArray(result)) {
       return [];
     }
 
     return result.map((series) => {
-      const samples = series.samples || series.data || [];
-      const data = Array.isArray(samples)
-        ? samples.map((point) => ({
+      const data = series.data || [];
+      const dataResult = Array.isArray(data)
+        ? data.map((point) => ({
             timestamp: point.timestamp || Date.now(),
             value: point.value || 0,
           }))
@@ -99,7 +100,7 @@ export class TimeSeriesService {
       return {
         key: series.key,
         labels: series.labels || {},
-        data,
+        data: dataResult,
       };
     });
   }

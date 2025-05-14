@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsOptional,
   IsString,
@@ -9,61 +9,55 @@ import {
   Max,
 } from "class-validator";
 import { Type } from "class-transformer";
-import { EventType, OperationType } from "@app/shared/interfaces";
+import { EventStatus, EventType, OperationType } from "@app/shared/interfaces";
 
 export class EventsQueryDto {
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Event type filter",
     enum: EventType,
-    required: false,
   })
   @IsOptional()
   @IsEnum(EventType)
   type?: EventType;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Start date for filtering events (ISO format)",
     example: "2025-01-01T00:00:00Z",
-    required: false,
   })
   @IsOptional()
   @IsDateString()
   startDate?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "End date for filtering events (ISO format)",
     example: "2025-12-31T23:59:59Z",
-    required: false,
   })
   @IsOptional()
   @IsDateString()
   endDate?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Operation name filter",
     enum: OperationType,
-    enumName: "OperationType",
-    required: false,
   })
   @IsOptional()
   @IsEnum(OperationType)
   operation?: OperationType;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Status filter (success or error)",
-    example: "success",
-    enum: ["success", "error"],
-    required: false,
+    example: EventStatus.SUCCESS,
+    enum: EventStatus,
   })
   @IsOptional()
   @IsString()
-  status?: "success" | "error";
+  @IsEnum(EventStatus)
+  status?: EventStatus;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Page number for pagination",
     example: 1,
     default: 1,
-    required: false,
   })
   @IsOptional()
   @IsInt()
@@ -71,11 +65,10 @@ export class EventsQueryDto {
   @Type(() => Number)
   page?: number = 1;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Number of items per page",
     example: 10,
     default: 10,
-    required: false,
   })
   @IsOptional()
   @IsInt()

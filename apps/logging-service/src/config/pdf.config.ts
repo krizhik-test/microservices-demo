@@ -2,12 +2,12 @@ import { ChartQueryParams } from "./chart.config";
 
 export const PDF_DOCUMENT_CONFIG = {
   margin: 50,
-};
+} as const;
 
 export const PDF_CHART_CONFIG = {
   fit: [500, 300] as [number, number],
   align: "center" as "center" | "right",
-};
+} as const;
 
 export interface PdfTextStyles {
   title: {

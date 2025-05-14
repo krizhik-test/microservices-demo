@@ -16,6 +16,11 @@ export enum EventType {
   SYSTEM = "system",
 }
 
+export enum EventStatus {
+  SUCCESS = "success",
+  ERROR = "error",
+}
+
 export enum OperationType {
   SEARCH = "search",
   FETCH_DATA = "fetch_data",
