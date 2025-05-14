@@ -40,7 +40,7 @@ export class EventsRepository implements OnModuleInit {
   async findById(id: string): Promise<EventDocument | null> {
     return this.mongoDBService
       .getCollection(this.COLLECTION_NAME)
-      .findOne<EventDocument>({ "payload.id": id });
+      .findOne({ _id: id });
   }
 
   async count(criteria: Filter<EventDocument>): Promise<number> {

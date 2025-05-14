@@ -1,16 +1,15 @@
+import * as fs from "fs";
+import * as path from "path";
+import * as util from "util";
+import axios from "axios";
 import {
   Injectable,
   NotFoundException,
   BadRequestException,
 } from "@nestjs/common";
-import { DataFetchDto } from "../dto/request/data-fetch.dto";
-import * as fs from "fs";
-import * as path from "path";
-import * as util from "util";
-import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
-import { EventService } from "./event.service";
 import { EventStatus, EventType, OperationType } from "@app/shared/interfaces";
+import { DataFetchDto } from "../dto/request";
+import { EventService } from "./event.service";
 import {
   MAX_LIMIT,
   MAX_RESULTS_PER_REQUEST,
@@ -30,11 +29,14 @@ export class DataService {
     try {
       // Calculate how many API calls we need to make
       const requestsNeeded = Math.ceil(limit / MAX_RESULTS_PER_REQUEST);
-      const actualLimit = Math.min(limit, MAX_LIMIT); // Cap at 10,000 to avoid excessive API calls
+      const actualLimit = Math.min(limit, MAX_LIMIT);
 
+      // Generate a random name using timestamp and random number
+      const randomSuffix = Math.random().toString(36).substring(2, 10);
+      const timestamp = Date.now().toString(36);
       const outputFilename = `${
         filename || query.replace(/\s+/g, "-")
-      }-${uuidv4().slice(0, 8)}.json`;
+      }-${timestamp}${randomSuffix}.json`;
       const filePath = path.join(this.downloadsDir, outputFilename);
 
       await fs.promises.mkdir(this.downloadsDir, { recursive: true });

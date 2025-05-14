@@ -26,18 +26,13 @@ export function ApiLogInterceptorFactory(serviceName: string) {
 
       return next.handle().pipe(
         tap({
-          next: (data) => this.logSuccess(method, url, startTime, data),
+          next: () => this.logSuccess(method, url, startTime),
           error: (error) => this.logError(method, url, startTime, error),
         })
       );
     }
 
-    logSuccess(
-      method: string,
-      url: string,
-      startTime: number,
-      data: any
-    ): void {
+    logSuccess(method: string, url: string, startTime: number): void {
       const executionTime = Date.now() - startTime;
       this.redisTimeSeriesService.logApiRequest(
         serviceName,

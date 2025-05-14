@@ -1,5 +1,6 @@
+import { ObjectId } from "mongodb";
+
 export interface EventPayload<T = any> {
-  id: string;
   timestamp: number;
   service: string;
   operation: string;
@@ -38,6 +39,7 @@ export enum ServiceType {
 }
 
 export interface EventMessage<T = any> {
+  _id: ObjectId;
   type: EventType;
   payload: EventPayload<T>;
 }

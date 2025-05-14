@@ -26,34 +26,18 @@ export class MongoDBService implements OnModuleInit, OnModuleDestroy {
       const appName = npmArgs.remain[0] || "";
       isLoggingService = appName.includes("logging");
       isDataService = appName.includes("data") || appName.includes("ingestion");
-      console.log(`Detected service from npm command: ${appName}`);
     }
     // 2. Second priority: Check process arguments
     else if (process.argv.length > 0) {
       const args = process.argv.join(" ");
       isLoggingService = args.includes("logging");
       isDataService = args.includes("data") || args.includes("ingestion");
-      console.log(
-        `Detected service from process arguments: ${
-          isLoggingService
-            ? "logging"
-            : isDataService
-            ? "data-ingestion"
-            : "unknown"
-        }`
-      );
     }
     // 3. Third priority: Check Docker-specific environment variables
-    else if (this.configService.get<string>("PORT_LOGGING")) {
+    else if (this.configService.get<string>("app.portLogging")) {
       isLoggingService = true;
-      console.log(
-        "Detected logging service from PORT_LOGGING environment variable"
-      );
-    } else if (this.configService.get<string>("PORT_DATA_INGESTION")) {
+    } else if (this.configService.get<string>("app.portDataIngestion")) {
       isDataService = true;
-      console.log(
-        "Detected data-ingestion service from PORT_DATA_INGESTION environment variable"
-      );
     }
     // 4. Last resort: Use a default if we can't determine
     else {
@@ -67,11 +51,9 @@ export class MongoDBService implements OnModuleInit, OnModuleDestroy {
     let variableName: string;
 
     if (isLoggingService) {
-      variableName = "LOGGING_SERVICE_MONGODB_URI";
-      console.log("Using Logging Service MongoDB URI");
+      variableName = "mongo.loggingUri";
     } else {
-      variableName = "DATA_SERVICE_MONGODB_URI";
-      console.log("Using Data Ingestion Service MongoDB URI");
+      variableName = "mongo.dataIngestionUri";
     }
 
     const uri = this.configService.get<string>(variableName);
@@ -92,7 +74,6 @@ export class MongoDBService implements OnModuleInit, OnModuleDestroy {
   async onModuleDestroy() {
     if (this.client) {
       await this.client.close();
-      console.log("MongoDB connection closed");
     }
   }
 

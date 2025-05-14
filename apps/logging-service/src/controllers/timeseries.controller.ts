@@ -1,9 +1,9 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { ApiQueryTimeSeries } from "../swagger/timeseries.swagger";
-import { TimeSeriesService } from "../services/timeseries.service";
-import { TimeSeriesQueryDto } from "../dto/request/timeseries-query.dto";
-import { TimeSeriesDto } from "../dto/response/timeseries-response.dto";
+import { ApiQueryTimeSeries } from "../swagger";
+import { TimeSeriesService } from "../services";
+import { TimeSeriesQueryDto } from "../dto/request";
+import { TimeSeriesDto } from "../dto/response";
 
 @ApiTags("timeseries")
 @Controller("timeseries")

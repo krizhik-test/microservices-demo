@@ -1,7 +1,7 @@
 import { HttpStatus } from "@nestjs/common";
 import { applyDecorators } from "@nestjs/common";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { TimeSeriesDto } from "../dto/response/timeseries-response.dto";
+import { TimeSeriesDto } from "../dto/response";
 
 export function ApiQueryTimeSeries() {
   return applyDecorators(

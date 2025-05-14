@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Filter } from "mongodb";
-import { EventsQueryDto } from "../dto/request/events-query.dto";
-import { EventsRepository } from "../repositories/events.repository";
-import { EventDocument } from "../interfaces/event-document.interface";
-import { EventDto, EventsListDto } from "../dto/response/events-response.dto";
+import { EventsQueryDto } from "../dto/request";
+import { EventsRepository } from "../repositories";
+import { EventDocument } from "../interfaces";
+import { EventDto, EventsListDto } from "../dto/response";
 
 @Injectable()
 export class EventsService {

@@ -14,9 +14,16 @@ import {
 import { ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
-import { FileService } from "../services/file.service";
-import { FileUploadDto } from "../dto/request/file-upload.dto";
-
+import { FileService } from "../services";
+import { FileUploadDto } from "../dto/request";
+import { FileNameParamDto } from "../dto/params";
+import {
+  DeleteAllResponseDto,
+  DeleteResponseDto,
+  FileInfoDto,
+  FileProcessResponseDto,
+  FileUploadResponseDto,
+} from "../dto/response";
 import {
   ApiListUploadedFiles,
   ApiUploadFile,
@@ -24,16 +31,7 @@ import {
   ApiDownloadFile,
   ApiDeleteFile,
   ApiDeleteAllFiles,
-} from "../swagger/file.swagger";
-import {
-  DeleteAllResponseDto,
-  DeleteResponseDto,
-  FileInfoDto,
-} from "../dto/response/data-response.dto";
-import {
-  FileProcessResponseDto,
-  FileUploadResponseDto,
-} from "../dto/response/file-response.dto";
+} from "../swagger";
 
 @ApiTags("files")
 @Controller("files")
@@ -66,18 +64,21 @@ export class FileController {
   @Get("download/:filename")
   @ApiDownloadFile()
   async downloadFile(
-    @Param("filename") filename: string,
+    @Param() fileNameParamDto: FileNameParamDto,
     @Res() res: Response
   ): Promise<void> {
-    return this.fileService.streamFileToResponse(filename, res);
+    return this.fileService.streamFileToResponse(
+      fileNameParamDto.filename,
+      res
+    );
   }
 
   @Delete(":filename")
   @ApiDeleteFile()
   async deleteFile(
-    @Param("filename") filename: string
+    @Param() fileNameParamDto: FileNameParamDto
   ): Promise<DeleteResponseDto> {
-    return this.fileService.deleteFile(filename);
+    return this.fileService.deleteFile(fileNameParamDto.filename);
   }
 
   @Delete()

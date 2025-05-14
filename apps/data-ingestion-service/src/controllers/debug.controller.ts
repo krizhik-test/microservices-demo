@@ -1,11 +1,9 @@
 import { Controller, Post, Body } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { Filter } from "mongodb";
-import { DebugSearchDto } from "../dto/request/debug-search.dto";
-import { ApiAnalyzeQuery } from "../swagger/debug.swagger";
-import { DebugService } from "../services/debug.service";
-import { DataItem } from "../interfaces/data-item.interface";
-import { QueryAnalysisResponseDto } from "../dto/response/query-analysis.dto";
+import { QueryAnalysisResponseDto } from "../dto/response";
+import { DebugSearchDto } from "../dto/request";
+import { DebugService } from "../services";
+import { ApiAnalyzeQuery } from "../swagger";
 
 @ApiTags("debug")
 @Controller("debug")

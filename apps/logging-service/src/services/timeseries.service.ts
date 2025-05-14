@@ -7,8 +7,8 @@ import {
   TimeSeriesResult,
   TimeSeriesType,
 } from "@app/shared";
-import { TimeSeriesQueryDto } from "../dto/request/timeseries-query.dto";
-import { TimeSeriesDto } from "../dto/response/timeseries-response.dto";
+import { TimeSeriesQueryDto } from "../dto/request";
+import { TimeSeriesDto } from "../dto/response";
 
 @Injectable()
 export class TimeSeriesService {
@@ -77,7 +77,7 @@ export class TimeSeriesService {
       filterCriteria,
       aggregationConfig
     );
-
+    console.log("result", result);
     return this.transformTimeSeriesResult(result);
   }
 

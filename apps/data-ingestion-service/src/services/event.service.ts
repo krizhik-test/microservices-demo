@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { v4 as uuidv4 } from "uuid";
+import { ObjectId } from "mongodb";
 import { EventChannel, ServiceName } from "@app/shared/constants";
 import {
   RedisService,
@@ -21,22 +21,22 @@ export class EventService {
 
   async publishEvent<T = any>(
     type: EventType,
-    payload: Omit<EventPayload<T>, "id" | "timestamp" | "service">
+    payload: Omit<EventPayload<T>, "timestamp" | "service">
   ) {
     const startTime = Date.now();
 
     try {
-      const eventId = uuidv4();
       const timestamp = Date.now();
 
+      const eventId = new ObjectId();
       const fullPayload: EventPayload<T> = {
-        id: eventId,
         timestamp,
         service: this.SERVICE_NAME,
         ...payload,
       };
 
       const eventMessage: EventMessage<T> = {
+        _id: eventId,
         type,
         payload: fullPayload,
       };
@@ -51,7 +51,7 @@ export class EventService {
         executionTime
       );
 
-      return { success: true, eventId };
+      return { success: true, eventId: eventId.toString() };
     } catch (error) {
       console.error("Error publishing event:", error);
       throw error;

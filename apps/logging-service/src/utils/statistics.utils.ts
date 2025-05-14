@@ -49,15 +49,6 @@ export const calculateStatistics = (
     squaredDiffs.reduce((acc, val) => acc + val, 0) / squaredDiffs.length;
   const stdDev = Math.sqrt(avgSquaredDiff);
 
-  console.log("Statistics calculated:", {
-    totalDataPoints,
-    valuesCount: allValues.length,
-    min,
-    max,
-    average,
-    stdDev,
-  });
-
   return {
     totalDataPoints,
     min,

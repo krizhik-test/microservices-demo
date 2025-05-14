@@ -11,9 +11,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly configService: ConfigService) {}
 
   async onModuleInit() {
-    const host = this.configService.get<string>("REDIS_HOST", "localhost");
-    const port = this.configService.get<number>("REDIS_PORT", 6379);
-    const password = this.configService.get<string>("REDIS_PASSWORD", "");
+    const host = this.configService.get<string>("redis.host");
+    const port = this.configService.get<number>("redis.port");
+    const password = this.configService.get<string>("redis.password");
 
     const url = `redis://${password ? `:${password}@` : ""}${host}:${port}`;
 
@@ -41,8 +41,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     if (this.subscriber) {
       await this.subscriber.quit();
     }
-
-    console.log("Redis connections closed");
   }
 
   getClient(): RedisClientType {
@@ -68,7 +66,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     callback: (message: string, channel: string) => void
   ) {
     await this.subscriber.subscribe(channel, callback);
-    console.log(`Subscribed to channel: ${channel}`);
   }
 
   async set(

@@ -2,8 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 import * as PDFDocument from "pdfkit";
 import { TimeSeriesService } from "./timeseries.service";
-import { TimeSeriesQueryDto } from "../dto/request/timeseries-query.dto";
-import { ReportGenerationQueryDto } from "../dto/request/report-generation-query.dto";
+import { TimeSeriesQueryDto } from "../dto/request";
+import { ReportGenerationQueryDto } from "../dto/request";
 import {
   CHART_CANVAS_CONFIG,
   ChartQueryParams,
@@ -17,7 +17,7 @@ import {
   generateReportFilename,
   formatQueryParamsForPdf,
 } from "../config/pdf.config";
-import { calculateStatistics } from "../utils/statistics.utils";
+import { calculateStatistics } from "../utils";
 
 @Injectable()
 export class ReportsService {
@@ -30,29 +30,21 @@ export class ReportsService {
   async generateReport(
     reportQueryDto: ReportGenerationQueryDto
   ): Promise<{ buffer: Buffer; filename: string }> {
-    const queryDto = new TimeSeriesQueryDto();
-
-    if (reportQueryDto.type) queryDto.type = reportQueryDto.type;
-    if (reportQueryDto.startDate) queryDto.startDate = reportQueryDto.startDate;
-    if (reportQueryDto.endDate) queryDto.endDate = reportQueryDto.endDate;
-    if (reportQueryDto.service) queryDto.service = reportQueryDto.service;
-    if (reportQueryDto.endpoint) queryDto.endpoint = reportQueryDto.endpoint;
-    if (reportQueryDto.method) queryDto.method = reportQueryDto.method;
-    if (reportQueryDto.eventType) queryDto.eventType = reportQueryDto.eventType;
-
     const queryParams: ChartQueryParams = {
-      type: queryDto.type || "All Types",
-      service: queryDto.service || "All Services",
-      endpoint: queryDto.endpoint || "All Endpoints",
-      method: queryDto.method || "All Methods",
-      eventType: queryDto.eventType || "All Event Types",
-      startDate: queryDto.startDate,
-      endDate: queryDto.endDate,
+      type: reportQueryDto.type || "All Types",
+      service: reportQueryDto.service || "All Services",
+      endpoint: reportQueryDto.endpoint || "All Endpoints",
+      method: reportQueryDto.method || "All Methods",
+      eventType: reportQueryDto.eventType || "All Event Types",
+      startDate: reportQueryDto.startDate,
+      endDate: reportQueryDto.endDate,
     };
 
     let timeSeriesData = [];
     try {
-      timeSeriesData = await this.timeSeriesService.queryTimeSeries(queryDto);
+      timeSeriesData = await this.timeSeriesService.queryTimeSeries(
+        reportQueryDto
+      );
     } catch (error) {
       console.error("Error querying time series data:", error.message);
       timeSeriesData = [];
@@ -67,7 +59,6 @@ export class ReportsService {
       .text("Performance Report", { align: PDF_TEXT_STYLES.title.align });
     doc.moveDown();
 
-    // Add formatted metadata
     const metadataLines = formatQueryParamsForPdf(queryParams);
     metadataLines.forEach((line) => {
       doc.fontSize(PDF_TEXT_STYLES.metadata.fontSize).text(line);
@@ -75,7 +66,6 @@ export class ReportsService {
 
     doc.moveDown();
 
-    // Generate time series chart
     try {
       const chartBuffer = await this.generateTimeSeriesChart(
         timeSeriesData,
@@ -90,14 +80,12 @@ export class ReportsService {
     }
     doc.moveDown(2);
 
-    // Add summary section
     doc.addPage();
     doc
       .fontSize(PDF_TEXT_STYLES.section.fontSize)
       .text("Summary", { align: PDF_TEXT_STYLES.section.align });
     doc.moveDown();
 
-    // Add summary statistics
     const stats = calculateStatistics(timeSeriesData);
     doc
       .fontSize(PDF_TEXT_STYLES.content.fontSize)
@@ -115,7 +103,6 @@ export class ReportsService {
       .fontSize(PDF_TEXT_STYLES.content.fontSize)
       .text(`Standard Deviation: ${stats.stdDev.toFixed(2)}`);
 
-    // Finalize the PDF
     doc.end();
 
     return new Promise((resolve) => {

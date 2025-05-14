@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { Filter, InsertManyResult, Document } from "mongodb";
 import { MongoDBService } from "@app/shared";
-import { DataItem } from "../interfaces/data-item.interface";
+import { DataItem } from "../interfaces";
 
 @Injectable()
 export class DataRepository implements OnModuleInit {

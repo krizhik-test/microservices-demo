@@ -3,13 +3,14 @@ import { ConfigModule } from "@nestjs/config";
 import { MongoDBService } from "./database/mongodb.service";
 import { RedisService } from "./database/redis.service";
 import { RedisTimeSeriesService } from "./database/redis-timeseries.service";
+import appConfig from "./config/app.config";
 
 @Global()
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [".env"],
+      load: [appConfig],
     }),
   ],
   providers: [MongoDBService, RedisService, RedisTimeSeriesService],

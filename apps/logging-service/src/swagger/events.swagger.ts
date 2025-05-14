@@ -1,7 +1,7 @@
 import { HttpStatus } from "@nestjs/common";
 import { applyDecorators } from "@nestjs/common";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { EventDto, EventsListDto } from "../dto/response/events-response.dto";
+import { EventDto, EventsListDto } from "../dto/response";
 
 export function ApiFindAllEvents() {
   return applyDecorators(

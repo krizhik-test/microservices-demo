@@ -9,12 +9,12 @@ import * as path from "path";
 import { streamArray } from "stream-json/streamers/StreamArray";
 import { pick } from "stream-json/filters/Pick";
 import { chain } from "stream-chain";
+import { parser } from "stream-json/Parser";
 import { EventType } from "@app/shared";
 import { EventStatus, OperationType } from "@app/shared/interfaces";
 import { EventService } from "./event.service";
-import { DataRepository } from "../repositories/data.repository";
-import { parser } from "stream-json/Parser";
-import { DataItem } from "../interfaces/data-item.interface";
+import { DataRepository } from "../repositories";
+import { DataItem } from "../interfaces";
 
 @Injectable()
 export class FileService {

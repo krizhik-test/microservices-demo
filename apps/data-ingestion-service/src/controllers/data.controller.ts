@@ -9,20 +9,22 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { DataService } from "../services/data.service";
-import { DataFetchDto } from "../dto/request/data-fetch.dto";
+import { DataService } from "../services";
+import { DataFetchDto } from "../dto/request";
 import {
   DataFetchResponseDto,
   DeleteAllResponseDto,
   DeleteResponseDto,
   FileInfoDto,
-} from "../dto/response/data-response.dto";
+} from "../dto/response";
+import { FileNameParamDto } from "../dto/params";
 import {
   ApiFetchData,
   ApiListFiles,
   ApiDeleteDownloadedFile,
   ApiDeleteAllDownloadedFiles,
-} from "../swagger/data.swagger";
+} from "../swagger";
+
 
 @ApiTags("data")
 @Controller("data")
@@ -46,9 +48,9 @@ export class DataController {
   @Delete("files/:filename")
   @ApiDeleteDownloadedFile()
   async deleteDownloadedFile(
-    @Param("filename") filename: string
+    @Param() fileNameParamDto: FileNameParamDto
   ): Promise<DeleteResponseDto> {
-    return this.dataService.deleteDownloadedFile(filename);
+    return this.dataService.deleteDownloadedFile(fileNameParamDto.filename);
   }
 
   @Delete("files")

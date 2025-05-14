@@ -1,9 +1,9 @@
 import { Controller, Get, Query, Res } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { ReportsService } from "../services/reports.service";
-import { ReportGenerationQueryDto } from "../dto/request/report-generation-query.dto";
-import { ApiGenerateReport } from "../swagger/reports.swagger";
+import { ReportsService } from "../services";
+import { ReportGenerationQueryDto } from "../dto/request";
+import { ApiGenerateReport } from "../swagger";
 
 @Controller("reports")
 @ApiTags("reports")

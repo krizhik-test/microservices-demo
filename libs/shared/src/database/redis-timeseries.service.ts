@@ -20,7 +20,6 @@ export class RedisTimeSeriesService implements OnModuleInit {
 
   async onModuleInit() {
     this.client = this.redisService.getClient();
-    console.log("Redis TimeSeries service initialized");
   }
 
   /**
@@ -160,11 +159,8 @@ export class RedisTimeSeriesService implements OnModuleInit {
         }
       }
 
-      console.log(`Using key pattern: ${keyPattern}`);
-
       // Get all keys matching the pattern
       const keys = await this.client.keys(keyPattern);
-      console.log(`Found ${keys.length} matching keys:`, keys);
 
       if (!keys.length) {
         return [];
@@ -179,10 +175,6 @@ export class RedisTimeSeriesService implements OnModuleInit {
           let range;
 
           if (aggregation) {
-            console.log(
-              `Applying aggregation: ${aggregation.type} with bucket size ${aggregation.bucketSizeMs}ms`
-            );
-            // Use aggregation if provided
             range = await this.client.ts.range(
               key,
               fromTimestamp,
@@ -237,7 +229,6 @@ export class RedisTimeSeriesService implements OnModuleInit {
         }
       }
 
-      console.log(`Returning ${results.length} time series results`);
       return results;
     } catch (error) {
       console.error("Error in queryTimeSeriesData:", error);
@@ -268,7 +259,7 @@ export class RedisTimeSeriesService implements OnModuleInit {
         endpoint,
         method,
         statusCode: statusCode.toString(),
-        type: "api_request",
+        type: TimeSeriesType.API_REQUEST,
       }).catch(() => {
         // Ignore error if time series already exists
       });
@@ -300,7 +291,7 @@ export class RedisTimeSeriesService implements OnModuleInit {
         service: serviceName,
         eventType,
         channel,
-        type: "event_trace",
+        type: TimeSeriesType.EVENT_TRACE,
       }).catch(() => {
         // Ignore error if time series already exists
       });
