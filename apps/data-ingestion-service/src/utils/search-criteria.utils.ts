@@ -1,5 +1,5 @@
 import { Filter } from "mongodb";
-import { DataItem } from "../interfaces";
+import { DataItem } from "../modules/data/interfaces/data-item.interface";
 
 export function buildSearchCriteria(
   query?: string,

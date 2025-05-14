@@ -3,22 +3,12 @@ import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { SharedModule, THROTTLE_LIMIT, THROTTLE_TTL } from "@app/shared";
-import appConfig from "./config/app.config";
-import {
-  DataController,
-  DebugController,
-  FileController,
-  SearchController,
-} from "./controllers";
-import {
-  DataService,
-  EventService,
-  FileService,
-  SearchService,
-  DebugService,
-} from "./services";
-import { DataRepository } from "./repositories";
+import appConfig from "./configs/app.config";
 import { ApiLogInterceptor } from "./decorators/interceptors";
+import { DataModule } from "./modules/data/data.module";
+import { DebugModule } from "./modules/debug/debug.module";
+import { FileModule } from "./modules/file/file.module";
+import { SearchModule } from "./modules/search/search.module";
 
 @Module({
   imports: [
@@ -33,20 +23,12 @@ import { ApiLogInterceptor } from "./decorators/interceptors";
       },
     ]),
     SharedModule.forRoot(),
-  ],
-  controllers: [
-    DataController,
-    FileController,
-    SearchController,
-    DebugController,
+    DataModule,
+    DebugModule,
+    FileModule,
+    SearchModule,
   ],
   providers: [
-    DataService,
-    DebugService,
-    FileService,
-    SearchService,
-    EventService,
-    DataRepository,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
