@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsOptional,
   IsString,
@@ -7,13 +7,13 @@ import {
   IsInt,
   Min,
   Max,
-} from "class-validator";
-import { Type } from "class-transformer";
-import { EventStatus, EventType, OperationType } from "@app/shared/interfaces";
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { EventStatus, EventType, OperationType } from '@app/shared/interfaces';
 
 export class EventsQueryDto {
   @ApiPropertyOptional({
-    description: "Event type filter",
+    description: 'Event type filter',
     enum: EventType,
   })
   @IsOptional()
@@ -21,23 +21,23 @@ export class EventsQueryDto {
   type?: EventType;
 
   @ApiPropertyOptional({
-    description: "Start date for filtering events (ISO format)",
-    example: "2025-01-01T00:00:00Z",
+    description: 'Start date for filtering events (ISO format)',
+    example: '2025-01-01T00:00:00Z',
   })
   @IsOptional()
   @IsDateString()
   startDate?: string;
 
   @ApiPropertyOptional({
-    description: "End date for filtering events (ISO format)",
-    example: "2025-12-31T23:59:59Z",
+    description: 'End date for filtering events (ISO format)',
+    example: '2025-12-31T23:59:59Z',
   })
   @IsOptional()
   @IsDateString()
   endDate?: string;
 
   @ApiPropertyOptional({
-    description: "Operation name filter",
+    description: 'Operation name filter',
     enum: OperationType,
   })
   @IsOptional()
@@ -45,7 +45,7 @@ export class EventsQueryDto {
   operation?: OperationType;
 
   @ApiPropertyOptional({
-    description: "Status filter (success or error)",
+    description: 'Status filter (success or error)',
     example: EventStatus.SUCCESS,
     enum: EventStatus,
   })
@@ -55,7 +55,7 @@ export class EventsQueryDto {
   status?: EventStatus;
 
   @ApiPropertyOptional({
-    description: "Page number for pagination",
+    description: 'Page number for pagination',
     example: 1,
     default: 1,
   })
@@ -66,7 +66,7 @@ export class EventsQueryDto {
   page?: number = 1;
 
   @ApiPropertyOptional({
-    description: "Number of items per page",
+    description: 'Number of items per page',
     example: 10,
     default: 10,
   })

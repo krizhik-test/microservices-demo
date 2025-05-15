@@ -1,15 +1,15 @@
-import { Injectable } from "@nestjs/common";
-import { EventStatus, EventType, OperationType } from "@app/shared/interfaces";
-import { buildSearchCriteria } from "../../utils";
-import { EventService } from "../event/event.service";
-import { DataService } from "../data/data.service";
-import { SearchDto } from "./dto/request";
+import { Injectable } from '@nestjs/common';
+import { EventStatus, EventType, OperationType } from '@app/shared/interfaces';
+import { buildSearchCriteria } from '../../utils';
+import { EventService } from '../event/event.service';
+import { DataService } from '../data/data.service';
+import { SearchDto } from './dto/request';
 
 @Injectable()
 export class SearchService {
   constructor(
     private readonly dataService: DataService,
-    private readonly eventService: EventService
+    private readonly eventService: EventService,
   ) {}
 
   async search(searchDto: SearchDto) {
@@ -38,7 +38,7 @@ export class SearchService {
 
       await this.eventService.publishEvent(EventType.DATA_SEARCH, {
         operation: OperationType.SEARCH,
-        status: "success",
+        status: EventStatus.SUCCESS,
         data: {
           query,
           title,

@@ -1,4 +1,8 @@
-import { EventStatus, EventType, OperationType } from "@app/shared/interfaces";
+import type {
+  EventStatus,
+  EventType,
+  OperationType,
+} from '@app/shared/interfaces';
 
 export interface EventDocument {
   /** MongoDB document ID */

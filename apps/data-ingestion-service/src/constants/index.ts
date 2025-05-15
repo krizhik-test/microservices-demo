@@ -1,1 +1,1 @@
-export * from "./wiki.constants";
+export * from './wiki.constants';

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import {
   EventChannel,
   RedisTimeSeriesService,
@@ -6,14 +6,14 @@ import {
   TIME_PERIODS,
   TimeSeriesResult,
   TimeSeriesType,
-} from "@app/shared";
-import { TimeSeriesQueryDto } from "./dto/request";
-import { TimeSeriesDto } from "./dto/response";
+} from '@app/shared';
+import { TimeSeriesQueryDto } from './dto/request';
+import { TimeSeriesDto } from './dto/response';
 
 @Injectable()
 export class TimeSeriesService {
   constructor(
-    private readonly redisTimeSeriesService: RedisTimeSeriesService
+    private readonly redisTimeSeriesService: RedisTimeSeriesService,
   ) {}
 
   async queryTimeSeries(query: TimeSeriesQueryDto) {
@@ -25,28 +25,28 @@ export class TimeSeriesService {
     const filterCriteria: Record<string, string> = {};
 
     if (type === TimeSeriesType.API_REQUEST) {
-      filterCriteria["service"] = query.service
+      filterCriteria.service = query.service
         ? String(query.service)
         : String(ServiceName.DATA_INGESTION);
 
       if (query.method) {
-        filterCriteria["method"] = String(query.method);
+        filterCriteria.method = String(query.method);
       }
 
       if (query.endpoint) {
-        filterCriteria["endpoint"] = String(query.endpoint);
+        filterCriteria.endpoint = String(query.endpoint);
       }
     }
 
     if (type === TimeSeriesType.EVENT_TRACE) {
-      filterCriteria["service"] = query.service
+      filterCriteria.service = query.service
         ? String(query.service)
         : String(ServiceName.DATA_INGESTION);
 
       if (query.eventType) {
-        filterCriteria["eventType"] = String(query.eventType);
+        filterCriteria.eventType = String(query.eventType);
       }
-      filterCriteria["channel"] = String(EventChannel.EVENTS);
+      filterCriteria.channel = String(EventChannel.EVENTS);
     }
 
     let aggregationConfig;
@@ -75,14 +75,14 @@ export class TimeSeriesService {
       fromTimestamp,
       toTimestamp,
       filterCriteria,
-      aggregationConfig
+      aggregationConfig,
     );
-    console.log("result", result);
+    console.log('result', result);
     return this.transformTimeSeriesResult(result);
   }
 
   private transformTimeSeriesResult(
-    result: TimeSeriesResult[]
+    result: TimeSeriesResult[],
   ): TimeSeriesDto[] {
     if (!result || !Array.isArray(result)) {
       return [];

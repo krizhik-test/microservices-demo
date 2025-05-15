@@ -1,8 +1,8 @@
-import { NestFactory } from "@nestjs/core";
-import { ValidationPipe } from "@nestjs/common";
-import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
-import { ConfigService } from "@nestjs/config";
-import { AppModule } from "./app.module";
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,14 +14,14 @@ async function bootstrap() {
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
-    })
+    }),
   );
 
   const config = new DocumentBuilder()
-    .setTitle("Logging Service API")
-    .setDescription("APIs for event logging, querying, and report generation")
-    .setVersion("1.0")
-    .addTag("logging")
+    .setTitle('Logging Service API')
+    .setDescription('APIs for event logging, querying, and report generation')
+    .setVersion('1.0')
+    .addTag('logging')
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
@@ -29,10 +29,10 @@ async function bootstrap() {
     deepScanRoutes: true,
   });
 
-  SwaggerModule.setup("api", app, document);
+  SwaggerModule.setup('api', app, document);
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>("app.port");
+  const port = configService.get<number>('app.port');
 
   await app.listen(port, () => {
     console.log(`Logging Service is running on: http://localhost:${port}`);

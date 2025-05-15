@@ -1,1 +1,1 @@
-export * from "./data-fetch.dto";
+export * from './data-fetch.dto';

@@ -4,10 +4,10 @@ import {
   ExecutionContext,
   CallHandler,
   HttpStatus,
-} from "@nestjs/common";
-import { Observable } from "rxjs";
-import { tap } from "rxjs/operators";
-import { RedisTimeSeriesService } from "../database/redis-timeseries.service";
+} from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { RedisTimeSeriesService } from '../database/redis-timeseries.service';
 
 /**
  * Factory function to create an ApiLogInterceptor with a specific service name
@@ -26,9 +26,13 @@ export function ApiLogInterceptorFactory(serviceName: string) {
 
       return next.handle().pipe(
         tap({
-          next: () => this.logSuccess(method, url, startTime),
-          error: (error) => this.logError(method, url, startTime, error),
-        })
+          next: () => {
+            this.logSuccess(method, url, startTime);
+          },
+          error: (error) => {
+            this.logError(method, url, startTime, error);
+          },
+        }),
       );
     }
 
@@ -39,7 +43,7 @@ export function ApiLogInterceptorFactory(serviceName: string) {
         url,
         method,
         HttpStatus.OK,
-        executionTime
+        executionTime,
       );
     }
 
@@ -50,7 +54,7 @@ export function ApiLogInterceptorFactory(serviceName: string) {
         url,
         method,
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-        executionTime
+        executionTime,
       );
     }
   }

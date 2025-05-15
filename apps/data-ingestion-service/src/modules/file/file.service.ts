@@ -2,32 +2,32 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-} from "@nestjs/common";
-import { Response } from "express";
-import * as fs from "fs";
-import * as path from "path";
-import { streamArray } from "stream-json/streamers/StreamArray";
-import { pick } from "stream-json/filters/Pick";
-import { chain } from "stream-chain";
-import { parser } from "stream-json/Parser";
-import { EventType } from "@app/shared";
-import { EventStatus, OperationType } from "@app/shared/interfaces";
-import { EventService } from "../event/event.service";
-import { DataService } from "../data/data.service";
-import { DataItem } from "../data/interfaces";
+} from '@nestjs/common';
+import { Response } from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
+import { streamArray } from 'stream-json/streamers/StreamArray';
+import { pick } from 'stream-json/filters/Pick';
+import { chain } from 'stream-chain';
+import { parser } from 'stream-json/Parser';
+import { EventType } from '@app/shared';
+import { EventStatus, OperationType } from '@app/shared/interfaces';
+import { EventService } from '../event/event.service';
+import { DataService } from '../data/data.service';
+import { DataItem } from '../data/interfaces';
 
 @Injectable()
 export class FileService {
-  private readonly downloadsDir = path.join(process.cwd(), "downloads");
-  private readonly uploadsDir = path.join(process.cwd(), "uploads");
+  private readonly downloadsDir = path.join(process.cwd(), 'downloads');
+  private readonly uploadsDir = path.join(process.cwd(), 'uploads');
 
   constructor(
     private readonly eventService: EventService,
-    private readonly dataService: DataService
+    private readonly dataService: DataService,
   ) {}
 
   async deleteFile(
-    filename: string
+    filename: string,
   ): Promise<{ success: boolean; message: string }> {
     const startTime = Date.now();
 
@@ -38,8 +38,8 @@ export class FileService {
         throw new NotFoundException(`File ${filename} not found`);
       }
 
-      if (!filename.endsWith(".json")) {
-        throw new BadRequestException("Only JSON files can be deleted");
+      if (!filename.endsWith('.json')) {
+        throw new BadRequestException('Only JSON files can be deleted');
       }
 
       await fs.promises.unlink(filePath);
@@ -85,13 +85,13 @@ export class FileService {
 
     try {
       const files = await fs.promises.readdir(this.uploadsDir);
-      const jsonFiles = files.filter((file) => file.endsWith(".json"));
+      const jsonFiles = files.filter((file) => file.endsWith('.json'));
 
       if (jsonFiles.length === 0) {
         return {
           success: true,
           count: 0,
-          message: "No JSON files found to delete",
+          message: 'No JSON files found to delete',
         };
       }
 
@@ -138,7 +138,7 @@ export class FileService {
     const files = await fs.promises.readdir(this.uploadsDir);
     const fileDetails = await Promise.all(
       files
-        .filter((file) => file.endsWith(".json"))
+        .filter((file) => file.endsWith('.json'))
         .map(async (file) => {
           const filePath = path.join(this.uploadsDir, file);
           const stats = await fs.promises.stat(filePath);
@@ -148,7 +148,7 @@ export class FileService {
             size: stats.size,
             createdAt: stats.birthtime.toISOString(),
           };
-        })
+        }),
     );
 
     return fileDetails;
@@ -159,11 +159,11 @@ export class FileService {
 
     try {
       if (!file) {
-        throw new BadRequestException("No file uploaded");
+        throw new BadRequestException('No file uploaded');
       }
 
-      if (!file.originalname.endsWith(".json")) {
-        throw new BadRequestException("Only JSON files are supported");
+      if (!file.originalname.endsWith('.json')) {
+        throw new BadRequestException('Only JSON files are supported');
       }
 
       // Save the file to the uploads directory
@@ -180,14 +180,14 @@ export class FileService {
         // If file.path exists (file is saved to disk by multer), copy it
         await fs.promises.copyFile(file.path, filePath);
       } else {
-        throw new BadRequestException("Invalid file data");
+        throw new BadRequestException('Invalid file data');
       }
 
       const result = await this.processJsonFile(filePath, filename);
 
       await this.eventService.publishEvent(EventType.DATA_UPLOAD, {
         operation: OperationType.UPLOAD_FILE,
-        status: "success",
+        status: 'success',
         data: {
           filename,
           originalFilename: file.originalname,
@@ -225,8 +225,8 @@ export class FileService {
         throw new NotFoundException(`File ${filename} not found`);
       }
 
-      if (!filename.endsWith(".json")) {
-        throw new BadRequestException("Only JSON files are supported");
+      if (!filename.endsWith('.json')) {
+        throw new BadRequestException('Only JSON files are supported');
       }
 
       const result = await this.processJsonFile(filePath, filename);
@@ -270,9 +270,9 @@ export class FileService {
 
     const stat = fs.statSync(filePath);
 
-    res.setHeader("Content-Length", stat.size);
-    res.setHeader("Content-Type", "application/json");
-    res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
+    res.setHeader('Content-Length', stat.size);
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
 
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
@@ -307,7 +307,7 @@ export class FileService {
           await this.dataService.bulkInsertData(batch);
           recordsProcessed += batch.length;
         } catch (error) {
-          console.error("Error inserting batch:", error);
+          console.error('Error inserting batch:', error);
           throw error;
         } finally {
           pendingWrites--;
@@ -317,25 +317,25 @@ export class FileService {
 
       try {
         const fileHeader = fs
-          .readFileSync(filePath, { encoding: "utf8", flag: "r" })
+          .readFileSync(filePath, { encoding: 'utf8', flag: 'r' })
           .slice(0, 200);
         const isWikipediaFormat =
           fileHeader.includes('"query"') && fileHeader.includes('"search"');
 
-        const fileStream = fs.createReadStream(filePath, { encoding: "utf8" });
+        const fileStream = fs.createReadStream(filePath, { encoding: 'utf8' });
         let pipeline;
 
         if (isWikipediaFormat) {
           pipeline = chain([
             fileStream,
             parser(),
-            pick({ filter: "query.search" }),
+            pick({ filter: 'query.search' }),
             streamArray(),
           ]);
-          pipeline.on("data", ({ value }) => {
+          pipeline.on('data', ({ value }) => {
             const transformedItem = {
               ...value,
-              source: "wikipedia",
+              source: 'wikipedia',
               importedAt: new Date(),
             };
 
@@ -349,7 +349,7 @@ export class FileService {
           });
         } else {
           pipeline = chain([fileStream, parser(), streamArray()]);
-          pipeline.on("data", ({ value }) => {
+          pipeline.on('data', ({ value }) => {
             const transformedItem = {
               ...value,
               importedAt: new Date(),
@@ -366,14 +366,15 @@ export class FileService {
           });
         }
 
-        pipeline.on("end", async () => {
+        pipeline.on('end', async () => {
           if (currentBatch.length > 0) {
             const finalBatch = [...currentBatch];
             currentBatch = [];
             try {
               await processBatch(finalBatch);
             } catch (error) {
-              return reject(error);
+              reject(error);
+              return;
             }
           }
 
@@ -381,19 +382,20 @@ export class FileService {
           checkIfComplete();
         });
 
-        pipeline.on("error", (err) => {
+        pipeline.on('error', (err) => {
           reject(
             new BadRequestException(
-              `Error processing JSON file: ${err.message}`
-            )
+              `Error processing JSON file: ${err.message}`,
+            ),
           );
         });
       } catch (error) {
-        return reject(
+        reject(
           new BadRequestException(
-            `Error processing JSON file: ${error.message}`
-          )
+            `Error processing JSON file: ${error.message}`,
+          ),
         );
+        return;
       }
     });
   }

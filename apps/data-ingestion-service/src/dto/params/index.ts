@@ -1,1 +1,1 @@
-export * from "./file-name.param.dto";
+export * from './file-name.param.dto';

@@ -1,1 +1,1 @@
-export * from "./search-criteria.utils";
+export * from './search-criteria.utils';

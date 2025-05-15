@@ -1,1 +1,1 @@
-export * from "./event-document.interface";
+export * from './event-document.interface';

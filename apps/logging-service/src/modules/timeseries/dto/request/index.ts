@@ -1,1 +1,1 @@
-export * from "./timeseries-query.dto";
+export * from './timeseries-query.dto';

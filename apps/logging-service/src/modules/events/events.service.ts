@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { Filter } from "mongodb";
-import { EventsQueryDto } from "./dto/request";
-import { EventsRepository } from "./events.repository";
-import { EventDocument } from "./interfaces";
-import { EventDto, EventsListDto } from "./dto/response";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Filter } from 'mongodb';
+import { EventsQueryDto } from './dto/request';
+import { EventsRepository } from './events.repository';
+import { EventDocument } from './interfaces';
+import { EventDto, EventsListDto } from './dto/response';
 
 @Injectable()
 export class EventsService {
@@ -23,27 +23,27 @@ export class EventsService {
     const criteria: Filter<EventDocument> = {};
 
     if (type) {
-      criteria["type"] = type;
+      criteria.type = type;
     }
 
     if (startDate || endDate) {
-      criteria["payload.timestamp"] = {};
+      criteria['payload.timestamp'] = {};
 
       if (startDate) {
-        criteria["payload.timestamp"]["$gte"] = new Date(startDate).getTime();
+        criteria['payload.timestamp'].$gte = new Date(startDate).getTime();
       }
 
       if (endDate) {
-        criteria["payload.timestamp"]["$lte"] = new Date(endDate).getTime();
+        criteria['payload.timestamp'].$lte = new Date(endDate).getTime();
       }
     }
 
     if (operation) {
-      criteria["payload.operation"] = operation;
+      criteria['payload.operation'] = operation;
     }
 
     if (status) {
-      criteria["payload.status"] = status;
+      criteria['payload.status'] = status;
     }
 
     const skip = (page - 1) * limit;

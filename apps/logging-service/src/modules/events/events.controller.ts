@@ -1,13 +1,13 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { EventsService } from "./events.service";
-import { EventsQueryDto } from "./dto/request";
-import { EventDto, EventsListDto } from "./dto/response";
-import { EventIdParamDto } from "../../dto/params";
-import { ApiFindAllEvents, ApiFindOneEvent } from "./swagger";
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { EventsService } from './events.service';
+import { EventsQueryDto } from './dto/request';
+import { EventDto, EventsListDto } from './dto/response';
+import { EventIdParamDto } from '../../dto/params';
+import { ApiFindAllEvents, ApiFindOneEvent } from './swagger';
 
-@ApiTags("events")
-@Controller("events")
+@ApiTags('events')
+@Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
@@ -17,7 +17,7 @@ export class EventsController {
     return this.eventsService.findAll(query);
   }
 
-  @Get(":id")
+  @Get(':id')
   @ApiFindOneEvent()
   async findOne(@Param() params: EventIdParamDto): Promise<EventDto> {
     return this.eventsService.findOne(params.id);

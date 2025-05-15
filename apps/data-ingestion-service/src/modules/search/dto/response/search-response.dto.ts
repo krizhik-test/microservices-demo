@@ -1,31 +1,31 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PaginationDto {
-  @ApiProperty({ description: "Total number of records" })
+  @ApiProperty({ description: 'Total number of records' })
   total: number;
 
-  @ApiProperty({ description: "Current page number" })
+  @ApiProperty({ description: 'Current page number' })
   page: number;
 
-  @ApiProperty({ description: "Number of records per page" })
+  @ApiProperty({ description: 'Number of records per page' })
   limit: number;
 
-  @ApiProperty({ description: "Total number of pages" })
+  @ApiProperty({ description: 'Total number of pages' })
   pages: number;
 }
 
 export class SearchResponseDto {
   @ApiProperty({
-    description: "Array of search results",
-    type: "array",
+    description: 'Array of search results',
+    type: 'array',
     items: {
-      type: "object",
+      type: 'object',
     },
   })
   data: any[];
 
   @ApiProperty({
-    description: "Pagination information",
+    description: 'Pagination information',
     type: PaginationDto,
   })
   pagination: PaginationDto;

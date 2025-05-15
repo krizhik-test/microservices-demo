@@ -1,1 +1,1 @@
-export * from "./debug-search.dto";
+export * from './debug-search.dto';

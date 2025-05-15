@@ -7,7 +7,7 @@ export interface TimeSeriesStatistics {
 }
 
 export const calculateStatistics = (
-  timeSeriesData: any[]
+  timeSeriesData: any[],
 ): TimeSeriesStatistics => {
   let totalDataPoints = 0;
   const allValues: number[] = [];
@@ -17,7 +17,7 @@ export const calculateStatistics = (
     if (series.data && series.data.length > 0) {
       totalDataPoints += series.data.length;
       series.data.forEach((point) => {
-        if (typeof point.value === "number") {
+        if (typeof point.value === 'number') {
           allValues.push(point.value);
         }
       });

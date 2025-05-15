@@ -1,4 +1,4 @@
-import { ChartQueryParams } from "./chart.config";
+import type { ChartQueryParams } from './chart.config';
 
 export const PDF_DOCUMENT_CONFIG = {
   margin: 50,
@@ -6,24 +6,24 @@ export const PDF_DOCUMENT_CONFIG = {
 
 export const PDF_CHART_CONFIG = {
   fit: [500, 300] as [number, number],
-  align: "center" as "center" | "right",
+  align: 'center' as 'center' | 'right',
 } as const;
 
 export interface PdfTextStyles {
   title: {
     fontSize: number;
-    align: "center" | "left" | "right";
+    align: 'center' | 'left' | 'right';
   };
   subtitle: {
     fontSize: number;
-    align: "center" | "left" | "right";
+    align: 'center' | 'left' | 'right';
   };
   metadata: {
     fontSize: number;
   };
   section: {
     fontSize: number;
-    align: "center" | "left" | "right";
+    align: 'center' | 'left' | 'right';
   };
   content: {
     fontSize: number;
@@ -33,18 +33,18 @@ export interface PdfTextStyles {
 export const PDF_TEXT_STYLES: PdfTextStyles = {
   title: {
     fontSize: 25,
-    align: "center",
+    align: 'center',
   },
   subtitle: {
     fontSize: 18,
-    align: "center",
+    align: 'center',
   },
   metadata: {
     fontSize: 12,
   },
   section: {
     fontSize: 18,
-    align: "center",
+    align: 'center',
   },
   content: {
     fontSize: 12,
@@ -56,7 +56,7 @@ export const generateReportFilename = (): string => {
 };
 
 export const formatQueryParamsForPdf = (
-  queryParams: ChartQueryParams
+  queryParams: ChartQueryParams,
 ): string[] => {
   const lines = [
     `Generated: ${new Date().toISOString()}`,
@@ -67,7 +67,7 @@ export const formatQueryParamsForPdf = (
     `Method: ${queryParams.method}`,
   ];
 
-  if (queryParams.eventType !== "All Event Types") {
+  if (queryParams.eventType !== 'All Event Types') {
     lines.push(`Event Type: ${queryParams.eventType}`);
   }
 

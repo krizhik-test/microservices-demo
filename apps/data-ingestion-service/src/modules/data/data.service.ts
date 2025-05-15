@@ -1,31 +1,32 @@
-import * as fs from "fs";
-import * as path from "path";
-import * as util from "util";
-import axios from "axios";
+import * as fs from 'fs';
+import * as path from 'path';
+import * as util from 'util';
+import axios from 'axios';
+import { Response } from 'express';
 import {
   Injectable,
   NotFoundException,
   BadRequestException,
-} from "@nestjs/common";
-import { EventStatus, EventType, OperationType } from "@app/shared/interfaces";
-import { DataFetchDto } from "./dto/request";
-import { EventService } from "../event/event.service";
+} from '@nestjs/common';
+import { EventStatus, EventType, OperationType } from '@app/shared/interfaces';
+import { DataFetchDto } from './dto/request';
+import { EventService } from '../event/event.service';
 import {
   MAX_LIMIT,
   MAX_RESULTS_PER_REQUEST,
   WIKI_API_URL,
-} from "../../constants/wiki.constants";
-import { DataRepository } from "./data.repository";
-import { DataItem } from "./interfaces";
-import { Filter } from "mongodb";
+} from '../../constants/wiki.constants';
+import { DataRepository } from './data.repository';
+import { DataItem } from './interfaces';
+import { Filter } from 'mongodb';
 
 @Injectable()
 export class DataService {
-  private readonly downloadsDir = path.join(process.cwd(), "downloads");
+  private readonly downloadsDir = path.join(process.cwd(), 'downloads');
 
   constructor(
     private readonly eventService: EventService,
-    private readonly dataRepository: DataRepository
+    private readonly dataRepository: DataRepository,
   ) {}
 
   async fetchData(dataFetchDto: DataFetchDto) {
@@ -41,7 +42,7 @@ export class DataService {
       const randomSuffix = Math.random().toString(36).substring(2, 10);
       const timestamp = Date.now().toString(36);
       const outputFilename = `${
-        filename || query.replace(/\s+/g, "-")
+        filename || query.replace(/\s+/g, '-')
       }-${timestamp}${randomSuffix}.json`;
       const filePath = path.join(this.downloadsDir, outputFilename);
 
@@ -50,14 +51,14 @@ export class DataService {
       const writeStream = fs.createWriteStream(filePath);
 
       const streamFinished = new Promise<void>((resolve, reject) => {
-        writeStream.on("finish", resolve);
-        writeStream.on("error", (err) => {
+        writeStream.on('finish', resolve);
+        writeStream.on('error', (err) => {
           console.error(`Error writing to file ${outputFilename}:`, err);
           reject(err);
         });
       });
 
-      writeStream.write("{");
+      writeStream.write('{');
       writeStream.write('  "query": {\n');
       writeStream.write('    "searchinfo": { "totalhits": 0 },\n');
       writeStream.write('    "search": [\n');
@@ -70,15 +71,15 @@ export class DataService {
         const offset = i * MAX_RESULTS_PER_REQUEST;
         const currentLimit = Math.min(
           MAX_RESULTS_PER_REQUEST,
-          actualLimit - resultCount
+          actualLimit - resultCount,
         );
 
         const response = await axios.get(WIKI_API_URL, {
           params: {
-            action: "query",
-            list: "search",
+            action: 'query',
+            list: 'search',
             srsearch: query,
-            format: "json",
+            format: 'json',
             srlimit: currentLimit,
             sroffset: offset,
           },
@@ -91,9 +92,9 @@ export class DataService {
         }
         for (let j = 0; j < searchResults.length; j++) {
           if (!isFirstBatch || j > 0) {
-            writeStream.write(",\n");
+            writeStream.write(',\n');
           }
-          writeStream.write("      " + JSON.stringify(searchResults[j]));
+          writeStream.write(`      ${JSON.stringify(searchResults[j])}`);
           resultCount++;
         }
         isFirstBatch = false;
@@ -107,9 +108,9 @@ export class DataService {
         }
       }
 
-      writeStream.write("\n    ],\n");
+      writeStream.write('\n    ],\n');
       writeStream.write(`    "searchinfo": { "totalhits": ${totalResults} }\n`);
-      writeStream.write("  },\n");
+      writeStream.write('  },\n');
 
       const metaData = {
         originalQuery: query,
@@ -119,12 +120,13 @@ export class DataService {
       };
 
       writeStream.write(
-        '  "_meta": ' +
-          JSON.stringify(metaData, null, 2).replace(/^/gm, "  ") +
-          "\n"
+        `  "_meta": ${JSON.stringify(metaData, null, 2).replace(
+          /^/gm,
+          '  ',
+        )}\n`,
       );
 
-      writeStream.write("}");
+      writeStream.write('}');
 
       writeStream.end();
       await streamFinished;
@@ -180,7 +182,7 @@ export class DataService {
     const files = await readdir(this.downloadsDir);
     const fileDetails = await Promise.all(
       files
-        .filter((file) => file.endsWith(".json"))
+        .filter((file) => file.endsWith('.json'))
         .map(async (file) => {
           const filePath = path.join(this.downloadsDir, file);
           const stats = await stat(filePath);
@@ -190,14 +192,31 @@ export class DataService {
             size: stats.size,
             createdAt: stats.birthtime.toISOString(),
           };
-        })
+        }),
     );
 
     return fileDetails;
   }
 
+  async streamFileToResponse(filename: string, res: Response) {
+    const filePath = path.join(this.downloadsDir, filename);
+
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException(`File ${filename} not found`);
+    }
+
+    const stat = fs.statSync(filePath);
+
+    res.setHeader('Content-Length', stat.size);
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+  }
+
   async deleteDownloadedFile(
-    filename: string
+    filename: string,
   ): Promise<{ success: boolean; message: string }> {
     const startTime = Date.now();
 
@@ -207,8 +226,8 @@ export class DataService {
       if (!fs.existsSync(filePath)) {
         throw new NotFoundException(`File ${filename} not found`);
       }
-      if (!filename.endsWith(".json")) {
-        throw new BadRequestException("Only JSON files can be deleted");
+      if (!filename.endsWith('.json')) {
+        throw new BadRequestException('Only JSON files can be deleted');
       }
 
       await fs.promises.unlink(filePath);
@@ -254,13 +273,13 @@ export class DataService {
 
     try {
       const files = await fs.promises.readdir(this.downloadsDir);
-      const jsonFiles = files.filter((file) => file.endsWith(".json"));
+      const jsonFiles = files.filter((file) => file.endsWith('.json'));
 
       if (jsonFiles.length === 0) {
         return {
           success: true,
           count: 0,
-          message: "No downloaded JSON files found to delete",
+          message: 'No downloaded JSON files found to delete',
         };
       }
 

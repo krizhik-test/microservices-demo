@@ -1,1 +1,1 @@
-export * from "./events-response.dto";
+export * from './events-response.dto';

@@ -1,22 +1,22 @@
-import { Injectable } from "@nestjs/common";
-import { ChartJSNodeCanvas } from "chartjs-node-canvas";
-import * as PDFDocument from "pdfkit";
-import { TimeSeriesService } from "../timeseries/timeseries.service";
-import { ReportGenerationQueryDto } from "./dto/request";
+import { Injectable } from '@nestjs/common';
+import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
+import * as PDFDocument from 'pdfkit';
+import { TimeSeriesService } from '../timeseries/timeseries.service';
+import { ReportGenerationQueryDto } from './dto/request';
 import {
   CHART_CANVAS_CONFIG,
   ChartQueryParams,
   createChartConfig,
   getRandomColor,
-} from "../../configs/chart.config";
+} from '../../configs/chart.config';
 import {
   PDF_DOCUMENT_CONFIG,
   PDF_CHART_CONFIG,
   PDF_TEXT_STYLES,
   generateReportFilename,
   formatQueryParamsForPdf,
-} from "../../configs/pdf.config";
-import { calculateStatistics } from "../../utils";
+} from '../../configs/pdf.config';
+import { calculateStatistics } from '../../utils';
 
 @Injectable()
 export class ReportsService {
@@ -27,14 +27,14 @@ export class ReportsService {
   }
 
   async generateReport(
-    reportQueryDto: ReportGenerationQueryDto
+    reportQueryDto: ReportGenerationQueryDto,
   ): Promise<{ buffer: Buffer; filename: string }> {
     const queryParams: ChartQueryParams = {
-      type: reportQueryDto.type || "All Types",
-      service: reportQueryDto.service || "All Services",
-      endpoint: reportQueryDto.endpoint || "All Endpoints",
-      method: reportQueryDto.method || "All Methods",
-      eventType: reportQueryDto.eventType || "All Event Types",
+      type: reportQueryDto.type || 'All Types',
+      service: reportQueryDto.service || 'All Services',
+      endpoint: reportQueryDto.endpoint || 'All Endpoints',
+      method: reportQueryDto.method || 'All Methods',
+      eventType: reportQueryDto.eventType || 'All Event Types',
       startDate: reportQueryDto.startDate,
       endDate: reportQueryDto.endDate,
     };
@@ -42,20 +42,20 @@ export class ReportsService {
     let timeSeriesData = [];
     try {
       timeSeriesData = await this.timeSeriesService.queryTimeSeries(
-        reportQueryDto
+        reportQueryDto,
       );
     } catch (error) {
-      console.error("Error querying time series data:", error.message);
+      console.error('Error querying time series data:', error.message);
       timeSeriesData = [];
     }
 
     const doc = new PDFDocument(PDF_DOCUMENT_CONFIG);
     const buffers: Buffer[] = [];
 
-    doc.on("data", (buffer) => buffers.push(buffer));
+    doc.on('data', (buffer) => buffers.push(buffer));
     doc
       .fontSize(PDF_TEXT_STYLES.title.fontSize)
-      .text("Performance Report", { align: PDF_TEXT_STYLES.title.align });
+      .text('Performance Report', { align: PDF_TEXT_STYLES.title.align });
     doc.moveDown();
 
     const metadataLines = formatQueryParamsForPdf(queryParams);
@@ -68,21 +68,21 @@ export class ReportsService {
     try {
       const chartBuffer = await this.generateTimeSeriesChart(
         timeSeriesData,
-        queryParams
+        queryParams,
       );
       if (chartBuffer) {
         doc.image(chartBuffer, PDF_CHART_CONFIG);
       }
     } catch (error) {
-      console.error("Error generating chart:", error);
-      doc.fontSize(12).text("Error generating chart", { align: "center" });
+      console.error('Error generating chart:', error);
+      doc.fontSize(12).text('Error generating chart', { align: 'center' });
     }
     doc.moveDown(2);
 
     doc.addPage();
     doc
       .fontSize(PDF_TEXT_STYLES.section.fontSize)
-      .text("Summary", { align: PDF_TEXT_STYLES.section.align });
+      .text('Summary', { align: PDF_TEXT_STYLES.section.align });
     doc.moveDown();
 
     const stats = calculateStatistics(timeSeriesData);
@@ -105,7 +105,7 @@ export class ReportsService {
     doc.end();
 
     return new Promise((resolve) => {
-      doc.on("end", () => {
+      doc.on('end', () => {
         const buffer = Buffer.concat(buffers);
         const filename = generateReportFilename();
         resolve({ buffer, filename });
@@ -115,7 +115,7 @@ export class ReportsService {
 
   private async generateTimeSeriesChart(
     timeSeriesData: any[],
-    queryParams: any
+    queryParams: any,
   ): Promise<Buffer | null> {
     if (!timeSeriesData || timeSeriesData.length === 0) {
       return null;
@@ -173,7 +173,7 @@ export class ReportsService {
 
       return await this.chartJSCanvas.renderToBuffer(chartConfig);
     } catch (error) {
-      console.error("Error generating chart:", error);
+      console.error('Error generating chart:', error);
       return null;
     }
   }

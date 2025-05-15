@@ -1,1 +1,1 @@
-export * from "./event-id.param.dto";
+export * from './event-id.param.dto';

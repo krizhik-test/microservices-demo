@@ -1,13 +1,13 @@
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
-import { SharedModule, THROTTLE_LIMIT, THROTTLE_TTL } from "@app/shared";
-import appConfig from "./configs/app.config";
-import { ApiLogInterceptor } from "./decorators/interceptors/api-log.interceptor";
-import { EventsModule } from "./modules/events/events.module";
-import { TimeSeriesModule } from "./modules/timeseries/timeseries.module";
-import { ReportsModule } from "./modules/reports/reports.module";
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { SharedModule, THROTTLE_LIMIT, THROTTLE_TTL } from '@app/shared';
+import appConfig from './configs/app.config';
+import { ApiLogInterceptor } from './decorators/interceptors/api-log.interceptor';
+import { EventsModule } from './modules/events/events.module';
+import { TimeSeriesModule } from './modules/timeseries/timeseries.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [

@@ -1,3 +1,3 @@
 export enum EventChannel {
-  EVENTS = "events",
+  EVENTS = 'events',
 }

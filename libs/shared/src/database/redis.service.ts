@@ -1,6 +1,6 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { createClient, RedisClientType } from "redis";
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { createClient, RedisClientType } from 'redis';
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
@@ -11,11 +11,11 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly configService: ConfigService) {}
 
   async onModuleInit() {
-    const host = this.configService.get<string>("redis.host");
-    const port = this.configService.get<number>("redis.port");
-    const password = this.configService.get<string>("redis.password");
+    const host = this.configService.get<string>('redis.host');
+    const port = this.configService.get<number>('redis.port');
+    const password = this.configService.get<string>('redis.password');
 
-    const url = `redis://${password ? `:${password}@` : ""}${host}:${port}`;
+    const url = `redis://${password ? `:${password}@` : ''}${host}:${port}`;
 
     this.client = createClient({ url });
     await this.client.connect();
@@ -57,13 +57,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   async publish(channel: string, message: string | object): Promise<number> {
     const messageStr =
-      typeof message === "string" ? message : JSON.stringify(message);
+      typeof message === 'string' ? message : JSON.stringify(message);
     return this.publisher.publish(channel, messageStr);
   }
 
   async subscribe(
     channel: string,
-    callback: (message: string, channel: string) => void
+    callback: (message: string, channel: string) => void,
   ) {
     await this.subscriber.subscribe(channel, callback);
   }
@@ -71,9 +71,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   async set(
     key: string,
     value: string | object,
-    ttl?: number
+    ttl?: number,
   ): Promise<string> {
-    const valueStr = typeof value === "string" ? value : JSON.stringify(value);
+    const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
 
     if (ttl) {
       return this.client.set(key, valueStr, { EX: ttl });

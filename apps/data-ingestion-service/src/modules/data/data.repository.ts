@@ -1,29 +1,29 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
-import { Filter, InsertManyResult, Document } from "mongodb";
-import { MongoDBService } from "@app/shared";
-import { DataItem } from "./interfaces";
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Filter, InsertManyResult, Document } from 'mongodb';
+import { MongoDBService } from '@app/shared';
+import { DataItem } from './interfaces';
 
 @Injectable()
 export class DataRepository implements OnModuleInit {
-  private readonly COLLECTION_NAME = "data_items";
+  private readonly COLLECTION_NAME = 'data_items';
 
   constructor(private readonly mongoDBService: MongoDBService) {}
 
   async onModuleInit() {
     await this.mongoDBService.createIndex(
       this.COLLECTION_NAME,
-      { title: "text" },
-      { name: "title_index" }
+      { title: 'text' },
+      { name: 'title_index' },
     );
   }
 
   async find(
     criteria: Filter<DataItem>,
     skip: number,
-    limit: number
+    limit: number,
   ): Promise<DataItem[]> {
     const collection = this.mongoDBService.getCollection<DataItem>(
-      this.COLLECTION_NAME
+      this.COLLECTION_NAME,
     );
 
     const query = collection.find(criteria);
@@ -56,15 +56,15 @@ export class DataRepository implements OnModuleInit {
    */
   async analyzeQuery(criteria: Filter<DataItem>) {
     const collection = this.mongoDBService.getCollection<DataItem>(
-      this.COLLECTION_NAME
+      this.COLLECTION_NAME,
     );
 
-    const findPlan = await collection.find(criteria).explain("executionStats");
+    const findPlan = await collection.find(criteria).explain('executionStats');
 
     const findWithSortPlan = await collection
       .find(criteria)
       .sort({ title: 1 })
-      .explain("executionStats");
+      .explain('executionStats');
 
     return {
       findQuery: {

@@ -1,1 +1,1 @@
-export * from "./data-item.interface";
+export * from './data-item.interface';

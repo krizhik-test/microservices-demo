@@ -1,7 +1,7 @@
 export const CHART_CANVAS_CONFIG = {
   width: 800,
   height: 400,
-  backgroundColour: "white",
+  backgroundColour: 'white',
 } as const;
 
 export interface ChartDatasetConfig {
@@ -27,10 +27,10 @@ export interface ChartQueryParams {
 export const createChartConfig = (
   labels: string[],
   datasets: ChartDatasetConfig[],
-  queryParams: ChartQueryParams
+  queryParams: ChartQueryParams,
 ) => {
   return {
-    type: "line",
+    type: 'line',
     data: {
       labels,
       datasets,
@@ -41,13 +41,13 @@ export const createChartConfig = (
         x: {
           title: {
             display: true,
-            text: "Time",
+            text: 'Time',
           },
         },
         y: {
           title: {
             display: true,
-            text: "Execution Time (ms)",
+            text: 'Execution Time (ms)',
           },
           beginAtZero: true,
         },
@@ -65,9 +65,9 @@ export const createChartConfig = (
           text: `Service: ${queryParams.service} | Endpoint: ${
             queryParams.endpoint
           } | Method: ${queryParams.method}${
-            queryParams.eventType !== "All Event Types"
+            queryParams.eventType !== 'All Event Types'
               ? ` | Event Type: ${queryParams.eventType}`
-              : ""
+              : ''
           }`,
           font: {
             size: 14,
@@ -77,7 +77,7 @@ export const createChartConfig = (
           },
         },
         legend: {
-          position: "bottom",
+          position: 'bottom',
         },
       },
     },

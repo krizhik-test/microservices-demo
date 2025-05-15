@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { DebugSearchDto } from "./dto/request";
-import { DataService } from "../data/data.service";
-import { buildSearchCriteria } from "../../utils";
+import { Injectable } from '@nestjs/common';
+import { DebugSearchDto } from './dto/request';
+import { DataService } from '../data/data.service';
+import { buildSearchCriteria } from '../../utils';
 
 @Injectable()
 export class DebugService {

@@ -1,2 +1,2 @@
-export * from "./event.interface";
-export * from "./timeseries.interface";
+export * from './event.interface';
+export * from './timeseries.interface';

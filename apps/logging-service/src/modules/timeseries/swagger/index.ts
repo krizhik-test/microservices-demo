@@ -1,1 +1,1 @@
-export * from "./timeseries.swagger";
+export * from './timeseries.swagger';

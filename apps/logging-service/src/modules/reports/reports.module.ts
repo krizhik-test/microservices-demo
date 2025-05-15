@@ -1,7 +1,7 @@
-import { Module } from "@nestjs/common";
-import { ReportsController } from "./reports.controller";
-import { ReportsService } from "./reports.service";
-import { TimeSeriesModule } from "../timeseries/timeseries.module";
+import { Module } from '@nestjs/common';
+import { ReportsController } from './reports.controller';
+import { ReportsService } from './reports.service';
+import { TimeSeriesModule } from '../timeseries/timeseries.module';
 
 @Module({
   imports: [TimeSeriesModule],

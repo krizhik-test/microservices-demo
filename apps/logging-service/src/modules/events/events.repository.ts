@@ -1,37 +1,37 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
-import { MongoDBService } from "@app/shared";
-import { Filter, InsertManyResult } from "mongodb";
-import { EventDocument } from "./interfaces";
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { MongoDBService } from '@app/shared';
+import { Filter, InsertManyResult } from 'mongodb';
+import { EventDocument } from './interfaces';
 
 @Injectable()
 export class EventsRepository implements OnModuleInit {
-  private readonly COLLECTION_NAME = "events";
+  private readonly COLLECTION_NAME = 'events';
 
   constructor(private readonly mongoDBService: MongoDBService) {}
 
   async onModuleInit() {
     await this.mongoDBService.createIndex(
       this.COLLECTION_NAME,
-      { "payload.timestamp": -1 },
-      { name: "timestamp_index" }
+      { 'payload.timestamp': -1 },
+      { name: 'timestamp_index' },
     );
 
     await this.mongoDBService.createIndex(
       this.COLLECTION_NAME,
-      { type: 1, "payload.operation": 1, "payload.status": 1 },
-      { name: "type_operation_status_index" }
+      { type: 1, 'payload.operation': 1, 'payload.status': 1 },
+      { name: 'type_operation_status_index' },
     );
   }
 
   async find(
     criteria: Filter<EventDocument>,
     skip: number,
-    limit: number
+    limit: number,
   ): Promise<EventDocument[]> {
     return this.mongoDBService
       .getCollection(this.COLLECTION_NAME)
       .find(criteria)
-      .sort({ "payload.timestamp": -1 })
+      .sort({ 'payload.timestamp': -1 })
       .skip(skip)
       .limit(limit)
       .toArray();
@@ -56,7 +56,7 @@ export class EventsRepository implements OnModuleInit {
   }
 
   async bulkInsert(
-    events: EventDocument[]
+    events: EventDocument[],
   ): Promise<InsertManyResult<EventDocument>> {
     if (events.length === 0) {
       return { acknowledged: true, insertedCount: 0, insertedIds: {} };

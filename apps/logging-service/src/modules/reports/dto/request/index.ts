@@ -1,1 +1,1 @@
-export * from "./report-generation-query.dto";
+export * from './report-generation-query.dto';

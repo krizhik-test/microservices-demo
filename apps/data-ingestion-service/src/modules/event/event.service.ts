@@ -1,13 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { ObjectId } from "mongodb";
-import { EventChannel, ServiceName } from "@app/shared/constants";
+import { Injectable } from '@nestjs/common';
+import { ObjectId } from 'mongodb';
+import { EventChannel, ServiceName } from '@app/shared/constants';
 import {
   RedisService,
   RedisTimeSeriesService,
   EventType,
   EventPayload,
   EventMessage,
-} from "@app/shared";
+} from '@app/shared';
 
 @Injectable()
 export class EventService {
@@ -16,12 +16,12 @@ export class EventService {
 
   constructor(
     private readonly redisService: RedisService,
-    private readonly redisTimeSeriesService: RedisTimeSeriesService
+    private readonly redisTimeSeriesService: RedisTimeSeriesService,
   ) {}
 
   async publishEvent<T = any>(
     type: EventType,
-    payload: Omit<EventPayload<T>, "timestamp" | "service">
+    payload: Omit<EventPayload<T>, 'timestamp' | 'service'>,
   ) {
     const startTime = Date.now();
 
@@ -46,14 +46,14 @@ export class EventService {
       const executionTime = Date.now() - startTime;
       await this.redisTimeSeriesService.logEventTrace(
         this.SERVICE_NAME,
-        "publish",
+        'publish',
         this.EVENT_CHANNEL,
-        executionTime
+        executionTime,
       );
 
       return { success: true, eventId: eventId.toString() };
     } catch (error) {
-      console.error("Error publishing event:", error);
+      console.error('Error publishing event:', error);
       throw error;
     }
   }

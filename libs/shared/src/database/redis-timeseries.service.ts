@@ -1,16 +1,16 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
-import { RedisService } from "./redis.service";
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { RedisService } from './redis.service';
 import {
   TimeSeriesAggregationType,
   TimeSeriesDuplicatePolicies,
   TimeSeriesEncoding,
-} from "@redis/time-series";
+} from '@redis/time-series';
 import {
   CreateOptions,
   TimeSeriesType,
   TimeSeriesResult,
-} from "../interfaces/timeseries.interface";
-import { TIME_PERIODS } from "../constants";
+} from '../interfaces/timeseries.interface';
+import { TIME_PERIODS } from '../constants';
 
 @Injectable()
 export class RedisTimeSeriesService implements OnModuleInit {
@@ -32,7 +32,7 @@ export class RedisTimeSeriesService implements OnModuleInit {
   private async createTimeSeries(
     key: string,
     labels: Record<string, string> = {},
-    retentionTime: number = TIME_PERIODS.ONE_MONTH
+    retentionTime: number = TIME_PERIODS.ONE_MONTH,
   ): Promise<string> {
     try {
       const options: CreateOptions = {
@@ -51,8 +51,8 @@ export class RedisTimeSeriesService implements OnModuleInit {
       return await this.client.ts.create(key, options);
     } catch (error) {
       // Ignore error if time series already exists
-      if (error.message && error.message.includes("already exists")) {
-        return "OK";
+      if (error.message?.includes('already exists')) {
+        return 'OK';
       }
       throw error;
     }
@@ -68,10 +68,10 @@ export class RedisTimeSeriesService implements OnModuleInit {
   private async addSample(
     key: string,
     value: number,
-    timestamp: number | "*" = "*"
+    timestamp: number | '*' = '*',
   ): Promise<number> {
-    if (timestamp === "*") {
-      return this.client.ts.add(key, "*", value);
+    if (timestamp === '*') {
+      return this.client.ts.add(key, '*', value);
     } else {
       return this.client.ts.add(key, timestamp, value);
     }
@@ -89,73 +89,73 @@ export class RedisTimeSeriesService implements OnModuleInit {
     fromTimestamp: number,
     toTimestamp: number,
     filters: Record<string, string> = {},
-    aggregation?: { type: string; bucketSizeMs: number }
+    aggregation?: { type: string; bucketSizeMs: number },
   ): Promise<TimeSeriesResult[]> {
     try {
       // For Redis TimeSeries, we need to use a different approach to match our key patterns
       // Instead of filtering by labels, we'll use key pattern matching
 
       // First, let's build a key pattern based on the type and filters
-      let keyPattern = "*";
+      let keyPattern = '*';
 
       if (type === TimeSeriesType.API_REQUEST) {
         // API keys have format: api:service:method:endpoint:statusCode
-        keyPattern = "api:";
+        keyPattern = 'api:';
 
         // Add service if provided
         if (filters.service) {
           keyPattern += `${filters.service}:`;
         } else {
-          keyPattern += "*:";
+          keyPattern += '*:';
         }
 
         // Add method if provided
         if (filters.method) {
           keyPattern += `${filters.method}:`;
         } else {
-          keyPattern += "*:";
+          keyPattern += '*:';
         }
 
         // Add endpoint if provided (with wildcards for partial matching)
         if (filters.endpoint) {
           // Remove leading slash for better matching
-          const endpoint = filters.endpoint.startsWith("/")
+          const endpoint = filters.endpoint.startsWith('/')
             ? filters.endpoint.substring(1)
             : filters.endpoint;
           keyPattern += `*${endpoint}*:`;
         } else {
-          keyPattern += "*:";
+          keyPattern += '*:';
         }
 
         // Add statusCode if provided
         if (filters.statusCode) {
           keyPattern += filters.statusCode;
         } else {
-          keyPattern += "*";
+          keyPattern += '*';
         }
       } else if (type === TimeSeriesType.EVENT_TRACE) {
         // Event keys have format: event:service:eventType:channel
-        keyPattern = "event:";
+        keyPattern = 'event:';
 
         // Add service if provided
         if (filters.service) {
           keyPattern += `${filters.service}:`;
         } else {
-          keyPattern += "*:";
+          keyPattern += '*:';
         }
 
         // Add eventType if provided
         if (filters.eventType) {
           keyPattern += `${filters.eventType}:`;
         } else {
-          keyPattern += "*:";
+          keyPattern += '*:';
         }
 
         // Add channel if provided
         if (filters.channel) {
           keyPattern += filters.channel;
         } else {
-          keyPattern += "*";
+          keyPattern += '*';
         }
       }
 
@@ -184,7 +184,7 @@ export class RedisTimeSeriesService implements OnModuleInit {
                   type: aggregation.type as TimeSeriesAggregationType,
                   timeBucket: aggregation.bucketSizeMs,
                 },
-              }
+              },
             );
           } else {
             // Get raw data if no aggregation
@@ -193,23 +193,23 @@ export class RedisTimeSeriesService implements OnModuleInit {
 
           if (range && range.length > 0) {
             // Extract labels from the key
-            const parts = key.split(":");
+            const parts = key.split(':');
             const labels: Record<string, string> = { type: String(type) };
 
             if (type === TimeSeriesType.API_REQUEST && parts.length >= 4) {
-              labels.service = parts[1] || "";
-              labels.method = parts[2] || "";
-              labels.endpoint = parts[3] || "";
+              labels.service = parts[1] || '';
+              labels.method = parts[2] || '';
+              labels.endpoint = parts[3] || '';
               if (parts.length > 4) {
-                labels.statusCode = parts[4] || "";
+                labels.statusCode = parts[4] || '';
               }
             } else if (
               type === TimeSeriesType.EVENT_TRACE &&
               parts.length >= 4
             ) {
-              labels.service = parts[1] || "";
-              labels.eventType = parts[2] || "";
-              labels.channel = parts[3] || "";
+              labels.service = parts[1] || '';
+              labels.eventType = parts[2] || '';
+              labels.channel = parts[3] || '';
             }
 
             results.push({
@@ -224,14 +224,14 @@ export class RedisTimeSeriesService implements OnModuleInit {
         } catch (error) {
           console.error(
             `Error getting time series data for key ${key}:`,
-            error
+            error,
           );
         }
       }
 
       return results;
     } catch (error) {
-      console.error("Error in queryTimeSeriesData:", error);
+      console.error('Error in queryTimeSeriesData:', error);
       return [];
     }
   }
@@ -249,7 +249,7 @@ export class RedisTimeSeriesService implements OnModuleInit {
     endpoint: string,
     method: string,
     statusCode: number,
-    executionTimeMs: number
+    executionTimeMs: number,
   ): Promise<number> {
     const key = `api:${serviceName}:${method}:${endpoint}:${statusCode}`;
 
@@ -266,7 +266,7 @@ export class RedisTimeSeriesService implements OnModuleInit {
 
       return this.addSample(key, executionTimeMs);
     } catch (error) {
-      console.error("Error logging API request to Redis TimeSeries:", error);
+      console.error('Error logging API request to Redis TimeSeries:', error);
       return -1;
     }
   }
@@ -280,9 +280,9 @@ export class RedisTimeSeriesService implements OnModuleInit {
    */
   async logEventTrace(
     serviceName: string,
-    eventType: "publish" | "consume",
+    eventType: 'publish' | 'consume',
     channel: string,
-    executionTimeMs: number
+    executionTimeMs: number,
   ): Promise<number> {
     const key = `event:${serviceName}:${eventType}:${channel}`;
 
@@ -298,7 +298,7 @@ export class RedisTimeSeriesService implements OnModuleInit {
 
       return this.addSample(key, executionTimeMs);
     } catch (error) {
-      console.error("Error logging event trace to Redis TimeSeries:", error);
+      console.error('Error logging event trace to Redis TimeSeries:', error);
       return -1;
     }
   }

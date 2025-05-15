@@ -1,9 +1,9 @@
-import { Module, Global, DynamicModule } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { MongoDBService } from "./database/mongodb.service";
-import { RedisService } from "./database/redis.service";
-import { RedisTimeSeriesService } from "./database/redis-timeseries.service";
-import appConfig from "./configs/app.config";
+import { Module, Global, DynamicModule } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { MongoDBService } from './database/mongodb.service';
+import { RedisService } from './database/redis.service';
+import { RedisTimeSeriesService } from './database/redis-timeseries.service';
+import appConfig from './configs/app.config';
 
 @Global()
 @Module({
