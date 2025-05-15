@@ -77,7 +77,7 @@ export class TimeSeriesService {
       filterCriteria,
       aggregationConfig,
     );
-    console.log('result', result);
+
     return this.transformTimeSeriesResult(result);
   }
 
