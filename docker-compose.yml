@@ -68,12 +68,12 @@ services:
       - app-network
 
   redis:
-    image: redis:7.2-alpine
+    image: redislabs/redistimeseries:latest
     container_name: redis
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - ./redis-data:/data
     networks:
       - app-network
     healthcheck:
@@ -81,7 +81,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    command: redis-server --save 60 1 --loglevel warning
+    command: >
+      redis-server 
+      --loadmodule /usr/lib/redis/modules/redistimeseries.so 
+      --save 60 1 
+      --loglevel warning
     restart: unless-stopped
 
   redis-commander:
@@ -104,6 +108,5 @@ networks:
 
 volumes:
   mongodb_data:
-  redis_data:
   uploads:
   downloads:
