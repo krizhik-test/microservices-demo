@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Filter } from 'mongodb';
-import { DataItem } from '../../modules/data/interfaces/data-item.interface';
+import { DataItem } from '../../../data/interfaces';
 
 export class QueryExecutionDetails {
   @ApiProperty({

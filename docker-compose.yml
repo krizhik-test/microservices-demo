@@ -68,7 +68,7 @@ services:
       - app-network
 
   redis:
-    image: redislabs/redistimeseries:latest
+    image: redis:7.2-alpine
     container_name: redis
     ports:
       - "6379:6379"
@@ -76,6 +76,13 @@ services:
       - redis_data:/data
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    command: redis-server --save 60 1 --loglevel warning
+    restart: unless-stopped
 
   redis-commander:
     image: rediscommander/redis-commander:latest
@@ -85,9 +92,11 @@ services:
     environment:
       - REDIS_HOSTS=local:redis:6379
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     networks:
       - app-network
+    restart: unless-stopped
 
 networks:
   app-network:
