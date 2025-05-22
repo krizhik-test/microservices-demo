@@ -1,0 +1,26 @@
+
+Assignment Details
+1. Project Setup:
+Create 2 nestjs backend services (i.e - service A, B).
+Select any public API that supports text-based queries.
+Connect the services to mongodb using the official nodejs mongo driver.
+Connect the services to redis using the official redis driver.
+Choose any messaging service or transporter for the intraservice communication.
+Project APIs should be exposed via swagger.
+Docker compose the entire setup.
+
+2. Feature Implementation:
+
+- Service A:
+Implement API to initiate a request to the public API to get a large amount of data (important to have a large dataset) and will download it as a JSON\EXCEL file. 
+Implement API to upload the generated file, parse it and insert robustly to the mongo database.
+Implement API to search the stored data. Search should be performed robustly - make use of indexes, efficient pagination, model the data efficiently, etc. 
+Each execution of the APIs above should publish an event (will be consumed by service B) with information of the executed operation (i.e request, result, timestamp, etc.).
+Use RedisTimeSeries to log API requests, API response, Event trace (publish and consume ack) and their execution time.
+- Service B:
+Subscribe to "events" (Published by service A) and insert each incoming event to db (i.e this is a logging service).
+Expose  API via swagger to query the timeseries logs by date range, type, or any other interesting filter. Perform the query robustly.
+Expose API via swagger that will generate a PDF report. The API should accept a query filter to search the time series data you stored. The report should consist of well structured, meaningful and styled charts. Generating this API in a 3rd microservice using GO or another programming language will be a plus. In this case communication should be done via gRPC.
+3. Code Expectations:
+Well organized, reusable and strongly typed code.
+Reusable parts (like db connections etc) should be structured as libs to be reused between services.
