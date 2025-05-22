@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { EventChannel, ServiceName } from '@app/shared/constants';
+import { TimeSeriesEventType } from '../../../../../libs/shared/src/interfaces/timeseries.interface';
 import {
   RedisService,
   RedisTimeSeriesService,
@@ -46,7 +47,7 @@ export class EventService {
       const executionTime = Date.now() - startTime;
       await this.redisTimeSeriesService.logEventTrace(
         this.SERVICE_NAME,
-        'publish',
+        TimeSeriesEventType.PUBLISH,
         this.EVENT_CHANNEL,
         executionTime,
       );

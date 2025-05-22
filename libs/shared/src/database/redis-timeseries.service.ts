@@ -9,6 +9,7 @@ import {
   CreateOptions,
   TimeSeriesType,
   TimeSeriesResult,
+  TimeSeriesEventType,
 } from '../interfaces/timeseries.interface';
 import { TIME_PERIODS } from '../constants';
 
@@ -280,7 +281,7 @@ export class RedisTimeSeriesService implements OnModuleInit {
    */
   async logEventTrace(
     serviceName: string,
-    eventType: 'publish' | 'consume',
+    eventType: TimeSeriesEventType,
     channel: string,
     executionTimeMs: number,
   ): Promise<number> {

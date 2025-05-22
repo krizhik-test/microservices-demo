@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { RedisService, RedisTimeSeriesService } from '@app/shared';
 import { EventsRepository } from './events.repository';
 import { ServiceName, EventChannel } from '@app/shared';
+import { TimeSeriesEventType } from '../../../../../libs/shared/src/interfaces/timeseries.interface';
 
 @Injectable()
 export class EventsSubscriber implements OnModuleInit {
@@ -32,7 +33,7 @@ export class EventsSubscriber implements OnModuleInit {
           const executionTime = Date.now() - startTime;
           await this.redisTimeSeriesService.logEventTrace(
             this.SERVICE_NAME,
-            'consume',
+            TimeSeriesEventType.CONSUME,
             channel,
             executionTime,
           );
