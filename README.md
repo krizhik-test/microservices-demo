@@ -18,11 +18,12 @@ This project consists of two NestJS microservices that communicate via Redis Pub
 ### Data Ingestion Service
 
 - Fetches data from public APIs
-- Handles file operations (upload, download, parsing)
+- Handles file operations (upload, download, parsing) with optimized streaming
 - Stores data in MongoDB
 - Publishes events to Redis Pub/Sub
 - Logs operations with RedisTimeSeries
 - Provides query analysis endpoint to check MongoDB index usage
+- Implements robust error handling for network issues and partial downloads
 
 ### Logging Service
 
@@ -110,3 +111,30 @@ If you want to run the NestJS services locally while using Docker for Redis and 
 ## Development
 
 Each service is a separate NestJS application with shared libraries for common functionality.
+
+## File Handling System
+
+The Data Ingestion Service implements an optimized file handling system with the following features:
+
+### Optimized Streaming
+
+- Uses Node.js streams with configurable chunk sizes for efficient file processing
+- Configurable buffer size (256KB by default) for optimal performance with different file sizes
+- Disk-based file storage instead of memory buffers for large file support
+
+### Robust Error Handling
+
+- Implements retry mechanism with exponential backoff for API requests
+- Preserves partial data in case of connection failures
+- Properly closes file streams even when errors occur
+- Provides detailed error information including partial success status
+
+### Configuration
+
+File handling settings are centralized in the `configs/file.config.ts` file, including:
+
+- Chunk size for stream operations
+- Maximum file size limits
+- Directory paths for uploads, downloads, and temporary files
+
+These settings can be adjusted based on expected file sizes and server capabilities.
