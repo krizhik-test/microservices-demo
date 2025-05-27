@@ -5,10 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import { FileConfig } from './configs/file.config';
 
 async function bootstrap() {
-  const uploadsDir = path.join(process.cwd(), 'uploads');
-  const downloadsDir = path.join(process.cwd(), 'downloads');
+  const uploadsDir = path.join(process.cwd(), FileConfig.UPLOADS_DIR);
+  const downloadsDir = path.join(process.cwd(), FileConfig.DOWNLOADS_DIR);
 
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });

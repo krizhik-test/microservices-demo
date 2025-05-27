@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { multerDiskStorage } from '../../utils/multer.config';
 import { FileService } from './file.service';
 import { FileUploadDto } from './dto/request';
 import { FileNameParamDto } from '../../dto/params';
@@ -41,7 +42,7 @@ export class FileController {
   }
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', multerDiskStorage))
   @ApiUploadFile()
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,

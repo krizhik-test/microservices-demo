@@ -19,10 +19,14 @@ import {
 import { DataRepository } from './data.repository';
 import { DataItem } from './interfaces';
 import { Filter } from 'mongodb';
+import { FileConfig } from '../../configs/file.config';
 
 @Injectable()
 export class DataService {
-  private readonly downloadsDir = path.join(process.cwd(), 'downloads');
+  private readonly downloadsDir = path.join(
+    process.cwd(),
+    FileConfig.DOWNLOADS_DIR,
+  );
 
   constructor(
     private readonly eventService: EventService,
@@ -52,7 +56,9 @@ export class DataService {
 
       await fs.promises.mkdir(this.downloadsDir, { recursive: true });
 
-      writeStream = fs.createWriteStream(filePath);
+      writeStream = fs.createWriteStream(filePath, {
+        highWaterMark: FileConfig.CHUNK_SIZE,
+      });
 
       const streamFinished = new Promise<void>((resolve, reject) => {
         writeStream!.on('finish', resolve);
@@ -339,7 +345,9 @@ export class DataService {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
 
-    const fileStream = fs.createReadStream(filePath);
+    const fileStream = fs.createReadStream(filePath, {
+      highWaterMark: FileConfig.CHUNK_SIZE,
+    });
     fileStream.pipe(res);
   }
 
